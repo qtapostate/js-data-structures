@@ -205,9 +205,15 @@ export function LinkedList<T = number>(...values: T[]) {
     function del(...indices: number[]): MutationResult<T> {
         try {
             const newItems: (T | null)[] = [...items].map(v => v.value);
+            let removed = 0;
             indices.forEach((index) => {
-                newItems[index] = null;
+                if (index < size()) {
+                    newItems[index] = null;
+                    removed = removed + 1;
+                }
             });
+
+            if (removed === 0) return [false, null];
 
             const newList = LinkedList<T>(...newItems.filter(v => v !== null) as T[]);
             return [true, newList];

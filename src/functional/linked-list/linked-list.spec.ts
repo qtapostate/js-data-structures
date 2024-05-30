@@ -522,4 +522,72 @@ describe('LinkedList', () => {
             expect(updatedList?.at(1)[0]?.value).toBe(62);
         });
     });
+
+    describe('LinkedList::delete(...number[])', () => {
+        it('should return safely but non-successfully when deleting a node at an index that does not exist', () => {
+            let initial = LinkedList();
+
+            expect(initial.size()).toBe(0);
+            
+            const [success, updatedList] = initial.delete(2);
+            expect(success).toBe(false);
+            expect(updatedList).toBe(null);
+        });
+
+        it('should successfully delete a single index from a list and update the head', () => {
+            let initial = LinkedList(14, 67, 10);
+
+            expect(initial.size()).toBe(3);
+            expect(initial?.at(0)[0]?.value).toBe(14);
+            expect(initial?.at(1)[0]?.value).toBe(67);
+            expect(initial?.at(2)[0]?.value).toBe(10);
+            expect(initial?.head()[0]?.value).toBe(14);
+
+            const [success, updatedList] = initial.delete(0);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(2);
+            expect(updatedList?.at(0)[0]?.value).toBe(67);
+            expect(updatedList?.at(1)[0]?.value).toBe(10);
+            expect(updatedList?.head()[0]?.value).toBe(67);
+        });
+
+        it('should successfully delete multiple indicies from a list and update the head', () => {
+            let initial = LinkedList(14, 67, 10, 99, 45);
+
+            expect(initial.size()).toBe(5);
+            expect(initial?.at(0)[0]?.value).toBe(14);
+            expect(initial?.at(1)[0]?.value).toBe(67);
+            expect(initial?.at(2)[0]?.value).toBe(10);
+            expect(initial?.at(3)[0]?.value).toBe(99);
+            expect(initial?.at(4)[0]?.value).toBe(45);
+            expect(initial?.head()[0]?.value).toBe(14);
+
+            const [success, updatedList] = initial.delete(0, 2);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(3);
+            expect(updatedList?.at(0)[0]?.value).toBe(67);
+            expect(updatedList?.at(1)[0]?.value).toBe(99);
+            expect(updatedList?.at(2)[0]?.value).toBe(45);
+        });
+
+        it('should successfully delete multiple indicies from a list even if one specified index does not exist', () => {
+            let initial = LinkedList(14, 67, 10, 99, 45);
+
+            expect(initial.size()).toBe(5);
+            expect(initial?.at(0)[0]?.value).toBe(14);
+            expect(initial?.at(1)[0]?.value).toBe(67);
+            expect(initial?.at(2)[0]?.value).toBe(10);
+            expect(initial?.at(3)[0]?.value).toBe(99);
+            expect(initial?.at(4)[0]?.value).toBe(45);
+            expect(initial?.head()[0]?.value).toBe(14);
+
+            const [success, updatedList] = initial.delete(0, 8);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(4);
+            expect(updatedList?.at(0)[0]?.value).toBe(67);
+            expect(updatedList?.at(1)[0]?.value).toBe(10);
+            expect(updatedList?.at(2)[0]?.value).toBe(99);
+            expect(updatedList?.at(3)[0]?.value).toBe(45);
+        });
+    })
 })
