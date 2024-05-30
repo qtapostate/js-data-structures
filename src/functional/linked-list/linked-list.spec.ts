@@ -341,5 +341,36 @@ describe('LinkedList', () => {
             expect(updatedList?.at(0)[0]?.value).toBe(150);
             expect(updatedList?.at(1)[0]?.value).toBe(673);
         });
+
+        it('should return a correct list when adding a single item to a list with 2 items', () => {
+            let initial = LinkedList(35, 62);
+
+            expect(initial.size()).toBe(2);
+
+            const newItems = [14];
+
+            const [success, updatedList] = initial.addHead(...newItems);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(2 + newItems.length);
+            expect(updatedList?.at(0)[0]?.value).toBe(14);
+            expect(updatedList?.at(1)[0]?.value).toBe(35);
+            expect(updatedList?.at(2)[0]?.value).toBe(62);
+        });
+
+        it('should return a correct list when adding multiple items to a list with 2 items', () => {
+            let initial = LinkedList(35, 62);
+
+            expect(initial.size()).toBe(2);
+
+            const newItems = [14, 21];
+
+            const [success, updatedList] = initial.addHead(...newItems);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(2 + newItems.length);
+            expect(updatedList?.at(0)[0]?.value).toBe(14);
+            expect(updatedList?.at(1)[0]?.value).toBe(21);
+            expect(updatedList?.at(2)[0]?.value).toBe(35);
+            expect(updatedList?.at(3)[0]?.value).toBe(62);
+        });
     });
 })
