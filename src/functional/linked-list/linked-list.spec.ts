@@ -221,4 +221,36 @@ describe('LinkedList', () => {
             expect(updatedTail?.next).toBe(null);
         });
     });
+
+    describe('LinkedList::find(number)', () => {
+        it('should return null when the list is empty', () => {
+            let initial = LinkedList();
+
+            expect(initial.size()).toBe(0);
+
+            let [node, index] = initial.find(42);
+            expect(node).toBe(null);
+            expect(index).toBe(null);
+        });
+
+        it('should find the correct value given a list with 5 elements and no duplicated values', () => {
+            let initial = LinkedList(5, 2, 19, 6, 11);
+
+            expect(initial.size()).toBe(5);
+            
+            let [node, index] = initial.find(19);
+            expect(node?.value).toBe(19);
+            expect(index).toBe(2);
+        });
+
+        it('should find the first correct value given a list with 5 elements and 1 duplicated value', () => {
+            let initial = LinkedList(5, 25, 19, 6, 25);
+
+            expect(initial.size()).toBe(5);
+            
+            let [node, index] = initial.find(25);
+            expect(node?.value).toBe(25);
+            expect(index).toBe(1);
+        });
+    });
 })
