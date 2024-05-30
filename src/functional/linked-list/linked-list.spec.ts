@@ -432,4 +432,94 @@ describe('LinkedList', () => {
             expect(updatedList?.at(3)[0]?.value).toBe(21);
         });
     });
+
+    describe('LinkedList::remove(...number[])', () => {
+        it('should return safely but non-successfully when removing from an empty list', () => {
+            let initial = LinkedList();
+
+            expect(initial.size()).toBe(0);
+
+            const [success, updatedList] = initial.remove(42);
+            expect(success).toBe(false);
+            expect(updatedList).toBe(null);
+        });
+
+        it('should return safely but non-successfully when removing from a list that does not contain the value', () => {
+            let initial = LinkedList(55, 62, 99);
+
+            expect(initial.size()).toBe(3);
+
+            const [success, updatedList] = initial.remove(42);
+            expect(success).toBe(false);
+            expect(updatedList).toBe(null);
+        });
+
+        it('should successfully remove the first matching value when removing a single value from a list that contains all values and no duplicates', () => {
+            let initial = LinkedList(55, 62, 99);
+
+            expect(initial.size()).toBe(3);
+
+            const [success, updatedList] = initial.remove(99);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(2);
+        });
+
+        it('should successfully remove the first matching value when removing a single value from a list that contains all values and 1 duplicated value', () => {
+            let initial = LinkedList(11, 55, 55, 62);
+
+            expect(initial.size()).toBe(4);
+            expect(initial?.at(0)[0]?.value).toBe(11);
+            expect(initial?.at(1)[0]?.value).toBe(55);
+            expect(initial?.at(2)[0]?.value).toBe(55);
+            expect(initial?.at(3)[0]?.value).toBe(62);
+
+            const [success, updatedList] = initial.remove(55);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(3);
+            expect(updatedList?.at(0)[0]?.value).toBe(11);
+            expect(updatedList?.at(1)[0]?.value).toBe(55);
+            expect(updatedList?.at(2)[0]?.value).toBe(62);
+        });
+
+        it('should successfully remove the first of each matching value when removing multiple values from a list that contains all values and no duplicates', () => {
+            let initial = LinkedList(55, 62, 99);
+
+            expect(initial.size()).toBe(3);
+
+            const [success, updatedList] = initial.remove(62, 99);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(1);
+        });
+
+        it('should successfully remove the first of each matching value when removing multiple values from a list that contains all values and 1 duplicated value', () => {
+            let initial = LinkedList(11, 55, 55, 62);
+
+            expect(initial.size()).toBe(4);
+            expect(initial?.at(0)[0]?.value).toBe(11);
+            expect(initial?.at(1)[0]?.value).toBe(55);
+            expect(initial?.at(2)[0]?.value).toBe(55);
+            expect(initial?.at(3)[0]?.value).toBe(62);
+
+            const [success, updatedList] = initial.remove(11, 55);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(2);
+            expect(updatedList?.at(0)[0]?.value).toBe(55);
+            expect(updatedList?.at(1)[0]?.value).toBe(62);
+        });
+
+        it('should successfully remove the the first of each matching value when removing multiple values from a list that contains all but one value and no duplicates', () => {
+            let initial = LinkedList(11, 55, 62);
+
+            expect(initial.size()).toBe(3);
+            expect(initial?.at(0)[0]?.value).toBe(11);
+            expect(initial?.at(1)[0]?.value).toBe(55);
+            expect(initial?.at(2)[0]?.value).toBe(62);
+
+            const [success, updatedList] = initial.remove(11, 42);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(2);
+            expect(updatedList?.at(0)[0]?.value).toBe(55);
+            expect(updatedList?.at(1)[0]?.value).toBe(62);
+        });
+    });
 })

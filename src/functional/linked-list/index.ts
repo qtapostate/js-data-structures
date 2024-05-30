@@ -147,12 +147,13 @@ export function LinkedList<T = number>(...values: T[]) {
             if (typeof value === 'object' && deepEquals(value as StringIndexable<T>, current?.value as StringIndexable<T>)) {
                 return [current, index];
             }
+
             if (value === items[index].value) {
                 return [items[index], index];
             }
 
             index = index + 1;
-        } while (current?.next)
+        } while (current?.next && index < size())
 
         return [null, null];
     }
