@@ -253,4 +253,65 @@ describe('LinkedList', () => {
             expect(index).toBe(1);
         });
     });
+
+    describe('LinkedList::at(number)', () => {
+        it('should return null when the list is empty', () => {
+            let initial = LinkedList();
+
+            expect(initial.size()).toBe(0);
+
+            let [node, index] = initial.at(0);
+            expect(node).toBe(null);
+            expect(index).toBe(null);
+        });
+
+        it('should return the correct value for list with 1 item', () => {
+            let initial = LinkedList(15);
+
+            expect(initial.size()).toBe(1);
+
+            let [node, index] = initial.at(0);
+            expect(node?.value).toBe(15);
+            expect(index).toBe(0);
+        });
+
+        it('should return the correct value for list with 3 items', () => {
+            let initial = LinkedList(15, 7, 28);
+
+            expect(initial.size()).toBe(3);
+
+            let [node, index] = initial.at(1);
+            expect(node?.value).toBe(7);
+            expect(index).toBe(1);
+        });
+
+        it('should return the correct value after deleting values in the middle', () => {
+            let initial = LinkedList(15, 7, 28, 18, 10);
+
+            expect(initial.size()).toBe(5);
+
+            let current = initial;
+
+            for(let i = 0; i < 2; i++) {
+                let [node, index] = current.at(1);
+                expect(index).toBe(1);
+
+                switch(i) {
+                    case 0:
+                        expect(node?.value).toBe(7);
+                        break;
+                    case 1:
+                        expect(node?.value).toBe(28);
+                        break;
+                    case 2:
+                        expect(node?.value).toBe(18);
+                        break;
+                }
+
+                const [success, updatedList] = current.delete(1);
+                expect(success).toBe(true);
+                current = updatedList!;
+            }
+        });
+    })
 })
