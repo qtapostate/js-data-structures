@@ -83,11 +83,11 @@ export function LinkedList<T = number>(...values: T[]) {
     // first create them unlinked so the space is allocated and the array is fully constructed
     const itemsUnlinked: ILinkedListNode<T>[] = values.map((v: T) => ({ value: v, next: null}) as ILinkedListNode<T>);
 
-    const items = itemsUnlinked.map((v: ILinkedListNode<T>, index: number) => (
-        {
-            ...v,
-            next: index > 0 ? itemsUnlinked[index - 1] : null
-        }) as ILinkedListNode<T>);
+    const items = [...itemsUnlinked];
+
+    for (let i = itemsUnlinked.length; i > 0; i--) {
+        items[i - 1].next = i < itemsUnlinked.length ? items[i] : null
+    }
 
     // simple primitive or array-type equality
     const equals = (left: any, right: any) => {
@@ -147,43 +147,44 @@ export function LinkedList<T = number>(...values: T[]) {
             if (typeof value === 'object' && deepEquals(value as StringIndexable<T>, current?.value as StringIndexable<T>)) {
                 return [current, index];
             }
+
             if (value === items[index].value) {
                 return [items[index], index];
             }
 
             index = index + 1;
-        } while (current?.next)
+        } while (current?.next && index < size())
 
         return [null, null];
     }
 
     const at = (target: number): RetrievalResult<T> => {
-        if (target >= size()) return [null, null];
+        if (target < 0 || target >= size()) return [null, null];
 
         let index = 0;
         const [headNode] = head();
         let current = headNode;
 
-        do {
+        while (current && index !== target + 1) {
             if (index === target) {
                 // return the current node because it matches
                 return [current, index];
             }
 
-            if (current?.next) {
-                // move to the next node
-                current = current?.next
+            if (!current?.next) {
+                break;
             }
 
+            current = current?.next
             index = index + 1;
-        } while (current && index !== target);
+        }
 
         return [null, null];
     }
 
-    const addHead = (value: T): MutationResult<T> => {
+    const addHead = (...value: T[]): MutationResult<T> => {
         try {
-            const newList = LinkedList<T>(...[value].concat(items.map((v: ILinkedListNode<T>) => v.value as T)));
+            const newList = LinkedList<T>(...[...value].concat(items.map((v: ILinkedListNode<T>) => v.value as T)));
 
             return [true, newList]
         } catch {
@@ -191,9 +192,9 @@ export function LinkedList<T = number>(...values: T[]) {
         }
     };
 
-    const addTail = (value: T): MutationResult<T> => {
+    const addTail = (...value: T[]): MutationResult<T> => {
         try {
-            const newList = LinkedList<T>(...items.map((v: ILinkedListNode<T>) => v.value as T).concat(value));
+            const newList = LinkedList<T>(...items.map((v: ILinkedListNode<T>) => v.value as T).concat(...value));
 
             return [true, newList];
         } catch {
@@ -201,10 +202,18 @@ export function LinkedList<T = number>(...values: T[]) {
         }
     }
 
-    function del(index: number): MutationResult<T> {
+    function del(...indices: number[]): MutationResult<T> {
         try {
             const newItems: (T | null)[] = [...items].map(v => v.value);
-            newItems[index] = null;
+            let removed = 0;
+            indices.forEach((index) => {
+                if (index < size()) {
+                    newItems[index] = null;
+                    removed = removed + 1;
+                }
+            });
+
+            if (removed === 0) return [false, null];
 
             const newList = LinkedList<T>(...newItems.filter(v => v !== null) as T[]);
             return [true, newList];
@@ -213,12 +222,15 @@ export function LinkedList<T = number>(...values: T[]) {
         }
     }
 
-    function remove(value: T): MutationResult<T> {
-        const [, removeIndex] = find(value);
+    function remove(...values: T[]): MutationResult<T> {
+        const removeIndicies: number[] = values
+            .map(find)
+            .map(result => result[1])
+            .filter(v => typeof v === 'number') as number[];
 
-        if (removeIndex === null) return [false, null];
+        if (removeIndicies.length === 0) return [false, null];
 
-        return del(removeIndex);
+        return del(...removeIndicies);
     }
 
     return {

@@ -1,5 +1,1 @@
-import * as LinkedList from "./linked-list-functional";
-
-export default {
-    LinkedList
-};
+export * from './linked-list';
