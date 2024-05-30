@@ -1,0 +1,28 @@
+{
+  "name": "js-data-structures",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Non-primitive data structures implemented in Javascript.",
+  "scripts": {
+    "test": "jest",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qtapostate/ts-non-primitives.git"
+  },
+  "keywords": [
+    "Javascript",
+    "Non-Primitive",
+    "Data Structures"
+  ],
+  "author": "Alexandra Belluscio",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/qtapostate/ts-non-primitives/issues"
+  },
+  "homepage": "https://github.com/qtapostate/ts-non-primitives#readme",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
