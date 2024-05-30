@@ -316,7 +316,7 @@ describe('LinkedList', () => {
     });
 
     describe('LinkedList::addHead(...number[])', () => {
-        it('should return an updated list when adding a single item', () => {
+        it('should return an updated list when adding a single item to the tail of a list', () => {
             let initial = LinkedList();
             
             expect(initial.size()).toBe(0);
@@ -328,7 +328,7 @@ describe('LinkedList', () => {
             expect(updatedList?.size()).toBe(newItems.length);
         });
 
-        it('should return an updated list when adding multiple items at the same time', () => {
+        it('should return an updated list when adding multiple items to the tail of a list at the same time', () => {
             let initial = LinkedList();
             
             expect(initial.size()).toBe(0);
@@ -342,7 +342,7 @@ describe('LinkedList', () => {
             expect(updatedList?.at(1)[0]?.value).toBe(673);
         });
 
-        it('should return a correct list when adding a single item to a list with 2 items', () => {
+        it('should return a correct list when adding a single item to the tail of a list with 2 items', () => {
             let initial = LinkedList(35, 62);
 
             expect(initial.size()).toBe(2);
@@ -357,7 +357,7 @@ describe('LinkedList', () => {
             expect(updatedList?.at(2)[0]?.value).toBe(62);
         });
 
-        it('should return a correct list when adding multiple items to a list with 2 items', () => {
+        it('should return a correct list when adding multiple items to the tail of a list with 2 items', () => {
             let initial = LinkedList(35, 62);
 
             expect(initial.size()).toBe(2);
@@ -371,6 +371,65 @@ describe('LinkedList', () => {
             expect(updatedList?.at(1)[0]?.value).toBe(21);
             expect(updatedList?.at(2)[0]?.value).toBe(35);
             expect(updatedList?.at(3)[0]?.value).toBe(62);
+        });
+    });
+
+    describe('LinkedList::addTail(...number[])', () => {
+        it('should return an updated list when adding a single item to the tail of a list', () => {
+            let initial = LinkedList();
+            
+            expect(initial.size()).toBe(0);
+
+            const newItems = [500];
+
+            const [success, updatedList] = initial.addTail(...newItems);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(newItems.length);
+        });
+
+        it('should return an updated list when adding multiple items to the tail of a list at the same time', () => {
+            let initial = LinkedList();
+            
+            expect(initial.size()).toBe(0);
+
+            const newItems = [150, 673];
+
+            const [success, updatedList] = initial.addTail(...newItems);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(newItems.length);
+            expect(updatedList?.at(0)[0]?.value).toBe(150);
+            expect(updatedList?.at(1)[0]?.value).toBe(673);
+        });
+
+        it('should return a correct list when adding a single item to the tail of a list with 2 items', () => {
+            let initial = LinkedList(35, 62);
+
+            expect(initial.size()).toBe(2);
+
+            const newItems = [14];
+
+            const [success, updatedList] = initial.addTail(...newItems);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(2 + newItems.length);
+            expect(updatedList?.at(0)[0]?.value).toBe(35);
+            expect(updatedList?.at(1)[0]?.value).toBe(62);
+            expect(updatedList?.at(2)[0]?.value).toBe(14);
+        });
+
+        it('should return a correct list when adding multiple items to the tail of a list with 2 items', () => {
+            let initial = LinkedList(35, 62);
+
+            expect(initial.size()).toBe(2);
+
+            const newItems = [14, 21];
+
+            const [success, updatedList] = initial.addTail(...newItems);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(2 + newItems.length);
+            expect(updatedList?.at(0)[0]?.value).toBe(35);
+            expect(updatedList?.at(1)[0]?.value).toBe(62);
+            expect(updatedList?.at(2)[0]?.value).toBe(14);
+            expect(updatedList?.at(3)[0]?.value).toBe(21);
         });
     });
 })
