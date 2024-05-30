@@ -5,7 +5,7 @@
   "description": "Non-primitive data structures implemented in Javascript.",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
