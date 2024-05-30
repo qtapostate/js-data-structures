@@ -181,9 +181,9 @@ export function LinkedList<T = number>(...values: T[]) {
         return [null, null];
     }
 
-    const addHead = (value: T): MutationResult<T> => {
+    const addHead = (...value: T[]): MutationResult<T> => {
         try {
-            const newList = LinkedList<T>(...[value].concat(items.map((v: ILinkedListNode<T>) => v.value as T)));
+            const newList = LinkedList<T>(...[...value].concat(items.map((v: ILinkedListNode<T>) => v.value as T)));
 
             return [true, newList]
         } catch {
@@ -191,9 +191,9 @@ export function LinkedList<T = number>(...values: T[]) {
         }
     };
 
-    const addTail = (value: T): MutationResult<T> => {
+    const addTail = (...value: T[]): MutationResult<T> => {
         try {
-            const newList = LinkedList<T>(...items.map((v: ILinkedListNode<T>) => v.value as T).concat(value));
+            const newList = LinkedList<T>(...items.map((v: ILinkedListNode<T>) => v.value as T).concat(...value));
 
             return [true, newList];
         } catch {
@@ -201,10 +201,12 @@ export function LinkedList<T = number>(...values: T[]) {
         }
     }
 
-    function del(index: number): MutationResult<T> {
+    function del(...indices: number[]): MutationResult<T> {
         try {
             const newItems: (T | null)[] = [...items].map(v => v.value);
-            newItems[index] = null;
+            indices.forEach((index) => {
+                newItems[index] = null;
+            });
 
             const newList = LinkedList<T>(...newItems.filter(v => v !== null) as T[]);
             return [true, newList];
@@ -213,12 +215,15 @@ export function LinkedList<T = number>(...values: T[]) {
         }
     }
 
-    function remove(value: T): MutationResult<T> {
-        const [, removeIndex] = find(value);
+    function remove(...values: T[]): MutationResult<T> {
+        const removeIndicies: number[] = values
+            .map(find)
+            .map(result => result[1])
+            .filter(v => typeof v === 'number') as number[];
 
-        if (removeIndex === null) return [false, null];
+        if (removeIndicies.length === 0) return [false, null];
 
-        return del(removeIndex);
+        return del(...removeIndicies);
     }
 
     return {
