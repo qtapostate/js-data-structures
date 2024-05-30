@@ -83,11 +83,17 @@ export function LinkedList<T = number>(...values: T[]) {
     // first create them unlinked so the space is allocated and the array is fully constructed
     const itemsUnlinked: ILinkedListNode<T>[] = values.map((v: T) => ({ value: v, next: null}) as ILinkedListNode<T>);
 
-    const items = itemsUnlinked.map((v: ILinkedListNode<T>, index: number) => (
-        {
-            ...v,
-            next: index > 0 ? itemsUnlinked[index - 1] : null
-        }) as ILinkedListNode<T>);
+    // const items = itemsUnlinked.map((v: ILinkedListNode<T>, index: number, arr: ILinkedListNode<T>[]) => (
+    //     {
+    //         value: v.value,
+    //         next: (index < arr.length - 1 ? { ...itemsUnlinked[index + 1] } : null)
+    //     }) as ILinkedListNode<T>);
+
+    const items = [...itemsUnlinked];
+
+    for (let i = itemsUnlinked.length; i > 0; i--) {
+        items[i - 1].next = items[i];
+    }
 
     // simple primitive or array-type equality
     const equals = (left: any, right: any) => {
