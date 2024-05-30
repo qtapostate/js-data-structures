@@ -83,16 +83,10 @@ export function LinkedList<T = number>(...values: T[]) {
     // first create them unlinked so the space is allocated and the array is fully constructed
     const itemsUnlinked: ILinkedListNode<T>[] = values.map((v: T) => ({ value: v, next: null}) as ILinkedListNode<T>);
 
-    // const items = itemsUnlinked.map((v: ILinkedListNode<T>, index: number, arr: ILinkedListNode<T>[]) => (
-    //     {
-    //         value: v.value,
-    //         next: (index < arr.length - 1 ? { ...itemsUnlinked[index + 1] } : null)
-    //     }) as ILinkedListNode<T>);
-
     const items = [...itemsUnlinked];
 
     for (let i = itemsUnlinked.length; i > 0; i--) {
-        items[i - 1].next = items[i];
+        items[i - 1].next = i < itemsUnlinked.length ? items[i] : null
     }
 
     // simple primitive or array-type equality
@@ -164,25 +158,25 @@ export function LinkedList<T = number>(...values: T[]) {
     }
 
     const at = (target: number): RetrievalResult<T> => {
-        if (target >= size()) return [null, null];
+        if (target < 0 || target >= size()) return [null, null];
 
         let index = 0;
         const [headNode] = head();
         let current = headNode;
 
-        do {
+        while (current && index !== target + 1) {
             if (index === target) {
                 // return the current node because it matches
                 return [current, index];
             }
 
-            if (current?.next) {
-                // move to the next node
-                current = current?.next
+            if (!current?.next) {
+                break;
             }
 
+            current = current?.next
             index = index + 1;
-        } while (current && index !== target);
+        }
 
         return [null, null];
     }

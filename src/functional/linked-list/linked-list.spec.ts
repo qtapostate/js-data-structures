@@ -60,8 +60,6 @@ describe('LinkedList', () => {
                 let [success, updatedList] = current.delete(0);
                 current = updatedList!;
 
-                console.log(i, success, updatedList?.items.length, updatedList?.isEmpty());
-
                 expect(success).toBe(true);
                 expect(current?.isEmpty()).toBe(i === 0);
             }
@@ -106,7 +104,7 @@ describe('LinkedList', () => {
         });
     });
     
-    describe('LinkedList::head', () => {
+    describe('LinkedList::head()', () => {
         it('should return a null head for empty list', () => {
             let initial = LinkedList();
 
@@ -166,4 +164,61 @@ describe('LinkedList', () => {
         });
     });
 
+    describe('LinkedList::tail()', () => {
+        it('should return a null tail for empty list', () => {
+            let initial = LinkedList();
+            expect(initial.size()).toBe(0);
+
+            let [node, index] = initial.tail();
+            expect(node).toBe(null);
+            expect(index).toBe(null);
+        });
+
+        it ('should return correct tail for list with 1 item', () => {
+            let initial = LinkedList(1);
+            expect(initial.size()).toBe(1);
+
+            let [node, index] = initial.tail();
+            expect(node?.value).toBe(1);
+            expect(index).toBe(initial.items.length - 1);
+        });
+
+        it ('should return correct tail for list with 3 items', () => {
+            let initial = LinkedList(1, 2, 3);
+            expect(initial.size()).toBe(3);
+
+            let [node, index] = initial.tail();
+            expect(node?.value).toBe(3);
+            expect(index).toBe(initial.items.length - 1);
+        });
+
+        it ('should return correct tail for list with 5 items', () => {
+            let initial = LinkedList(1, 2, 3, 4, 5);
+            expect(initial.size()).toBe(5);
+
+            let [node, index] = initial.tail();
+            expect(node?.value).toBe(5);
+            expect(index).toBe(initial.items.length - 1);
+        });
+
+        it ('should return updated tail when tail is removed', () => {
+            let initial = LinkedList(1, 2, 3, 4, 5);
+            expect(initial.size()).toBe(5);
+
+            let [node, index] = initial.tail();
+            expect(node?.value).toBe(5);
+            expect(index).toBe(initial.items.length - 1);
+
+            expect(node?.next).toBe(null);
+
+            let [success, updatedList] = initial.delete(initial.items.length - 1);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(4);
+
+            let [updatedTail, updatedIndex] = updatedList!.tail();
+            expect(updatedIndex).toBe(updatedList!.items.length - 1);
+            expect(updatedTail?.value).toBe(4);
+            expect(updatedTail?.next).toBe(null);
+        });
+    });
 })
