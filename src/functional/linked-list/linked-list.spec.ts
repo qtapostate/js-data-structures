@@ -313,5 +313,33 @@ describe('LinkedList', () => {
                 current = updatedList!;
             }
         });
-    })
+    });
+
+    describe('LinkedList::addHead(...number[])', () => {
+        it('should return an updated list when adding a single item', () => {
+            let initial = LinkedList();
+            
+            expect(initial.size()).toBe(0);
+
+            const newItems = [500];
+
+            const [success, updatedList] = initial.addHead(...newItems);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(newItems.length);
+        });
+
+        it('should return an updated list when adding multiple items at the same time', () => {
+            let initial = LinkedList();
+            
+            expect(initial.size()).toBe(0);
+
+            const newItems = [150, 673];
+
+            const [success, updatedList] = initial.addHead(...newItems);
+            expect(success).toBe(true);
+            expect(updatedList?.size()).toBe(newItems.length);
+            expect(updatedList?.at(0)[0]?.value).toBe(150);
+            expect(updatedList?.at(1)[0]?.value).toBe(673);
+        });
+    });
 })
