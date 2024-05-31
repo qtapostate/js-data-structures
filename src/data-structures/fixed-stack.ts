@@ -1,13 +1,8 @@
-import { DynamicStack, IStack, StackUnderflowError } from "./dynamic-stack";
+import { DynamicStack, IStack } from "./dynamic-stack";
+import { InvalidSizeError, StackOverflowError, StackUnderflowError } from "./errors";
 
 type MutationResult<T> = [success: boolean, stack: IFixedStack<T> | null];
 type MutationRetrievalResult<T> = [value: T | null, stack: IFixedStack<T> | null];
-
-export class StackOverflowError extends TypeError {
-    constructor() {
-        super("StackOverflowError: Stack has reached maximum capacity.");
-    }
-}
 
 export interface IFixedStack<T> extends IStack<T> {
     isFull(): boolean;
@@ -20,7 +15,7 @@ export function FixedStack<T = number>(maxSize: number, ...initValues: T[]): IFi
     }
 
     if (maxSize < 0) {
-        throw new RangeError("RangeError: max size must be a positive integer.")
+        throw new InvalidSizeError();
     }
     
     // get base functions so we don't have to reimplement them all

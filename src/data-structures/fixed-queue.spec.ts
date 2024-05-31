@@ -1,4 +1,5 @@
-import { FixedQueue, QueueCapacityReachedError, QueueEmptyError } from ".";
+import { QueueCapacityReachedError, QueueEmptyError } from "./errors";
+import { FixedQueue } from "./fixed-queue";
 
 describe('Fixed', () => {
 

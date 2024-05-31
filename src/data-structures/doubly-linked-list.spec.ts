@@ -1,4 +1,4 @@
-import { DoublyLinkedList } from ".";
+import { DoublyLinkedList } from "./doubly-linked-list";
 
 const randBetween = (lower: number, upper: number) => {
     if (lower < 0 || !Number.isInteger(lower)) {

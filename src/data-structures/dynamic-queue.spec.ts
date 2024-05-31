@@ -1,4 +1,5 @@
-import { DynamicQueue, QueueEmptyError } from "./dynamic-queue";
+import { DynamicQueue } from "./dynamic-queue";
+import { QueueEmptyError } from "./errors";
 
 describe('DynamicQueue', () => {
 

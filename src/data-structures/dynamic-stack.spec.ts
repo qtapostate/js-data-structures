@@ -1,4 +1,5 @@
-import { DynamicStack, StackUnderflowError } from "./dynamic-stack"
+import { DynamicStack } from "./dynamic-stack"
+import { StackUnderflowError } from "./errors";
 
 describe('DynamicStack', () => {
     it ('should initialize', () => {

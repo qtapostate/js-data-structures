@@ -1,13 +1,7 @@
 import { DynamicQueue, IQueue } from "./dynamic-queue";
+import { QueueCapacityReachedError } from "./errors";
 
 type MutationResult<T> = [success: boolean, queue: IFixedQueue<T> | null];
-type MutationRetrievalResult<T> = [value: T | null, queue: IFixedQueue<T> | null];
-
-export class QueueCapacityReachedError extends Error {
-    constructor() {
-        super("QueueCapacityReachedError: Unable to add new items to a queue when it has reached the defined capacity.");
-    }
-}
 
 export interface IFixedQueue<T> extends IQueue<T> {
     isFull(): boolean;
