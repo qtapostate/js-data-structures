@@ -15,8 +15,12 @@ export interface IFixedQueue<T> extends IQueue<T> {
 }
 
 export function FixedQueue<T = number>(maxSize: number, ...initValues: T[]): IFixedQueue<T> {
-    if (initValues.length > maxSize) {
+    if (initValues.length > Math.floor(maxSize)) {
         throw new QueueCapacityReachedError();
+    }
+
+    if (maxSize < 0) {
+        throw new RangeError("RangeError: max size must be a positive integer.")
     }
 
     const {
@@ -28,7 +32,7 @@ export function FixedQueue<T = number>(maxSize: number, ...initValues: T[]): IFi
         dequeue
     } = DynamicQueue(...initValues);
 
-    const capacity = () => maxSize;
+    const capacity = () => Math.floor(maxSize);
     const isFull = () => size() >= capacity();
 
     const enqueue = (value: T): MutationResult<T> => {

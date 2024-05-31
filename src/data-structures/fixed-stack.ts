@@ -15,6 +15,14 @@ export interface IFixedStack<T> extends IStack<T> {
 }
 
 export function FixedStack<T = number>(maxSize: number, ...initValues: T[]): IFixedStack<T> {
+    if (initValues.length > Math.floor(maxSize)) {
+        throw new StackOverflowError();
+    }
+
+    if (maxSize < 0) {
+        throw new RangeError("RangeError: max size must be a positive integer.")
+    }
+    
     // get base functions so we don't have to reimplement them all
     const {
         items,
@@ -23,11 +31,7 @@ export function FixedStack<T = number>(maxSize: number, ...initValues: T[]): IFi
         size
     } = DynamicStack(...initValues);
 
-    if (initValues.length > maxSize) {
-        throw new StackOverflowError();
-    }
-
-    const capacity = () => maxSize;
+    const capacity = () => Math.floor(maxSize);
 
     const isFull = () => items.length >= capacity();
 
