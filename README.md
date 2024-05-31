@@ -10,10 +10,10 @@ For this project I have only a few rules to constrain myself:
 
 Included in this project are (or will be) the following data structures:
 * `LinkedList`
+* `DoublyLinkedList`
  
 Still a work in progress:
 * Data Structures
-  * `DoublyLinkedList` (WIP)
   * `Stack` (WIP)
   * `Queue` (WIP)
   * `DirectedGraph` (WIP)
