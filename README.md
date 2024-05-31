@@ -9,20 +9,22 @@ For this project I have only a few rules to constrain myself:
 3. everything must have test suites close to 90% coverage - all edge cases should be covered.
 
 Included in this project are (or will be) the following data structures:
-* LinkedList
-  * `LinkedList` - a singly linked list that can be walked forward only.
-  * `DoublyLinkedList` - a doubly linked list that can be walked forward or backward.
-* Stack
+* Sets - good for storing ordered or unordered sequences of values
+  * `LinkedList` - an ordered list that can be walked forward only.
+  * `DoublyLinkedList` - an ordered list that can be walked forward or backward.
+  * `HashTable` (WIP)
+* Stack - good for storing dependent data
   * `DynamicStack` - a stack that grows as large as needed.
   * `FixedStack` - a stack with a specified size constraint.
-* Queue
+* Queue - good for ordering operations in a sequence
   * `DynamicQueue` - a queue that grows as large as needed.
   * `FixedQueue` - a queue with a specified size constraint.
- 
-Still a work in progress:
-* Data Structures
+* Graphs - good for mapping a network of relationships, such as decisions available given a current state
   * `DirectedGraph` (WIP)
+  * `WeightedDirectedGraph` (WIP)
   * `UndirectedGraph` (WIP)
+  * `WeightedUndirectedGraph` (WIP)
+* Trees - good for organizing data for fast interpretation
   * `NAryTree` (WIP)
   * `BalancedTree` (WIP)
   * `BinaryTree` (WIP)
@@ -31,9 +33,9 @@ Still a work in progress:
   * `RedBlackTree` (WIP)
   * `TwoThreeTree` (WIP)
   * `Trie` (WIP)
-  * `HashTable` (WIP)
-  * ... probably more that i'll think of adding later
- 
+
+---
+
 * Algorithms
   * Graph: Breadth-First Search (WIP)
   * Graph: Depth-First Search (WIP)
