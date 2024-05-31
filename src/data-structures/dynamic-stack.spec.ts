@@ -1,4 +1,4 @@
-import { DynamicStack } from "./stack"
+import { DynamicStack, StackUnderflowError } from "./dynamic-stack"
 
 describe('DynamicStack', () => {
     it ('should initialize', () => {
@@ -69,13 +69,12 @@ describe('DynamicStack', () => {
     });
 
     describe('DynamicStack::pop()', () => {
-        it('should safely but non-successfully return when attempting to pop a value from an empty stack', () => {
+        it('should throw a StackUnderflowError when attempting to pop from a stack with no values', () => {
             let initial = DynamicStack();
 
             expect(initial.size()).toBe(0);
             
-            const result = initial.pop();
-            expect(result).toStrictEqual([null, null]);
+            expect(() => initial.pop()).toThrow(new StackUnderflowError());
         });
 
         it('should return the correct value in position 0 after popping a value from a stack with existing values', () => {

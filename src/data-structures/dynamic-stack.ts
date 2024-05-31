@@ -1,7 +1,13 @@
-type MutationResult<T> = [success: boolean, stack: IDynamicStack<T> | null];
-type MutationRetrievalResult<T> = [value: T | null, stack: IDynamicStack<T> | null];
+type MutationResult<T> = [success: boolean, stack: IStack<T> | null];
+type MutationRetrievalResult<T> = [value: T | null, stack: IStack<T> | null];
 
-export interface IDynamicStack<T> {
+export class StackUnderflowError extends TypeError {
+    constructor() {
+        super("StackUnderflowError: Stack has no remaining items to pop.");
+    }
+}
+
+export interface IStack<T> {
     items: T[];
 
     push(value: T): MutationResult<T>;
@@ -11,7 +17,7 @@ export interface IDynamicStack<T> {
     size(): number;
 }
 
-export function DynamicStack<T = number>(...initValues: T[]): IDynamicStack<T> {
+export function DynamicStack<T = number>(...initValues: T[]): IStack<T> {
     const items = [ ...initValues ];
 
     // prevent direct modification of underlying array
@@ -28,6 +34,10 @@ export function DynamicStack<T = number>(...initValues: T[]): IDynamicStack<T> {
     };
 
     const pop = (): MutationRetrievalResult<T> => {
+        if (items.length === 0) {
+            throw new StackUnderflowError();
+        }
+        
         const returnValue = items[0] || null;
         const newStack = DynamicStack(...items.slice(1));
 
