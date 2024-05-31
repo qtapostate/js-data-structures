@@ -96,15 +96,39 @@ describe('DynamicStack', () => {
 
             const [firstPopValue, newStack1] = initial.pop();
             expect(firstPopValue).toBe(10);
+            expect(newStack1?.size()).toBe(2);
             expect(newStack1?.items).toStrictEqual([20, 30]);
 
             const [pushSuccess, newStack2] = newStack1!.push(999);
             expect(pushSuccess).toBe(true);
+            expect(newStack2?.size()).toBe(3);
             expect(newStack2?.items).toStrictEqual([999, 20, 30]);
 
             const [secondPopValue, newStack3] = newStack2!.pop();
             expect(secondPopValue).toBe(999);
+            expect(newStack3?.size()).toBe(2);
             expect(newStack3?.items).toStrictEqual([20, 30]);
         })
+    });
+
+    describe('DynamicStack::isEmpty()', () => {
+        it ('should return true for a stack that has only just been initialized', () => {
+            let initial = DynamicStack();
+
+            expect(initial.isEmpty()).toBe(true);
+        });
+
+        it ('should return false for a stack with existing values', () => {
+            let initial = DynamicStack(10, 20, 30);
+
+            expect(initial.isEmpty()).toBe(false);
+        });
+
+        it ('should return true for a stack with existing values that has those values popped', () => {
+            let [value, newStack] = DynamicStack(10).pop();
+
+            expect(value).toBe(10);
+            expect(newStack?.isEmpty()).toBe(true);
+        });
     });
 })
