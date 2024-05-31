@@ -10,14 +10,14 @@ For this project I have only a few rules to constrain myself:
 
 Included in this project are (or will be) the following data structures:
 * LinkedList
- * `LinkedList` - a singly linked list that can be walked forward only.
- * `DoublyLinkedList` - a doubly linked list that can be walked forward or backward.
+  * `LinkedList` - a singly linked list that can be walked forward only.
+  * `DoublyLinkedList` - a doubly linked list that can be walked forward or backward.
 * Stack
- * `DynamicStack` - a stack that grows as large as needed.
- * `FixedStack` - a stack with a specified size constraint.
+  * `DynamicStack` - a stack that grows as large as needed.
+  * `FixedStack` - a stack with a specified size constraint.
 * Queue
- * `DynamicQueue` - a queue that grows as large as needed.
- * `FixedQueue` - a queue with a specified size constraint.
+  * `DynamicQueue` - a queue that grows as large as needed.
+  * `FixedQueue` - a queue with a specified size constraint.
  
 Still a work in progress:
 * Data Structures
