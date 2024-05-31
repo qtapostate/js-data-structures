@@ -48,6 +48,12 @@ export interface ILinkedList<T> {
     addHead(...value: T[]): MutationResult<T>;
 
     /**
+     * Adds n elements to the linked list starting inclusively at a specified index, pushing other elements up by n positions
+     * @param value
+     */
+    insert(at: number, ...value: T[]): MutationResult<T>;
+
+    /**
      * Adds an element to the back of the linked list, becoming the last element.
      * @param value 
      */
@@ -209,6 +215,22 @@ export function LinkedList<T = number>(...values: T[]) {
         }
     }
 
+    const insert = (at: number, ...values: T[]): MutationResult<T> => {
+        if (at < 0 || at >= size()) {
+            return [false, null];
+        }
+
+        try {
+            const before = items.map(v => v.value).slice(0, at);
+            const after = items.map(v => v.value).slice(at);
+            const newList = LinkedList<T>(...before.concat(...values).concat(after));
+
+            return [true, newList];
+        } catch {
+            return [false, null];
+        }
+    }
+
     function del(...indices: number[]): MutationResult<T> {
         try {
             const newItems: (T | null)[] = [...items].map(v => v.value);
@@ -248,6 +270,7 @@ export function LinkedList<T = number>(...values: T[]) {
         at,
         addHead,
         addTail,
+        insert,
         remove,
         delete: del,
         isEmpty,
