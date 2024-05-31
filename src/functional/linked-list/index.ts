@@ -39,6 +39,11 @@ export interface ILinkedList<T> {
      */
     at(index: number): RetrievalResult<T>;
 
+    /**
+     * Retrieve a simple array consisting of the values of each node in the linked list.
+     */
+    values(): Array<T>;
+
     // Mutation Functions
 
     /**
@@ -84,10 +89,10 @@ export interface ILinkedList<T> {
     size(): number;
 }
 
-export function LinkedList<T = number>(...values: T[]) {
+export function LinkedList<T = number>(...initValues: T[]) {
 
     // first create them unlinked so the space is allocated and the array is fully constructed
-    const itemsUnlinked: ILinkedListNode<T>[] = values.map((v: T) => ({ value: v, next: null}) as ILinkedListNode<T>);
+    const itemsUnlinked: ILinkedListNode<T>[] = initValues.map((v: T) => ({ value: v, next: null}) as ILinkedListNode<T>);
 
     const items = [...itemsUnlinked];
 
@@ -195,6 +200,26 @@ export function LinkedList<T = number>(...values: T[]) {
         return [null, null];
     }
 
+    const values = (): Array<T> => {
+        const arraySize = size();
+        const arr = new Array<T>(arraySize);
+
+        let i = 0;
+        const [headNode] = head();
+        let current = headNode;
+
+        while (current && i < arraySize) {
+            arr[i] = current.value;
+
+            if (!current?.next) break;
+
+            current = current.next;
+            i = i + 1;
+        }
+
+        return arr;
+    }
+
     const addHead = (...value: T[]): MutationResult<T> => {
         return insert(0, ...value);
     };
@@ -273,6 +298,7 @@ export function LinkedList<T = number>(...values: T[]) {
         tail,
         find,
         at,
+        values,
         addHead,
         addTail,
         insert,

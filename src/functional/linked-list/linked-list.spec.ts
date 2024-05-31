@@ -833,4 +833,27 @@ describe('LinkedList', () => {
             expect(updatedList).toBe(null);
         })
     });
+
+    describe('LinkedList::values()', () => {
+        it('should return an empty array if the linked list is empty', () => {
+            let initial = LinkedList();
+
+            expect(initial.size()).toBe(0);
+
+            const array = initial.values();
+            expect(array).toBe([]);
+        });
+
+        it('should return an array of the same size with the same values', () => {
+            let initial = LinkedList(1, 2, 3);
+
+            expect(initial.size()).toBe(3);
+            expect(initial.at(0)[0]?.value).toBe(1);
+            expect(initial.at(1)[0]?.value).toBe(2);
+            expect(initial.at(2)[0]?.value).toBe(3);
+
+            const array = initial.values();
+            expect(array).toBe([1, 2, 3]);
+        });
+    });
 })
