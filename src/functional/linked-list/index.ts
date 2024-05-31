@@ -196,23 +196,11 @@ export function LinkedList<T = number>(...values: T[]) {
     }
 
     const addHead = (...value: T[]): MutationResult<T> => {
-        try {
-            const newList = LinkedList<T>(...[...value].concat(items.map((v: ILinkedListNode<T>) => v.value as T)));
-
-            return [true, newList]
-        } catch {
-            return [false, null];
-        }
+        return insert(0, ...value);
     };
 
     const addTail = (...value: T[]): MutationResult<T> => {
-        try {
-            const newList = LinkedList<T>(...items.map((v: ILinkedListNode<T>) => v.value as T).concat(...value));
-
-            return [true, newList];
-        } catch {
-            return [false, null];
-        }
+        return insert(size(), ...value);
     }
 
     const insert = (startingIndex: number, ...values: T[]): MutationResult<T> => {
