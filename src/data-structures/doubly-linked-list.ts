@@ -1,17 +1,18 @@
 /** Single linked list implemented as a higher-order function. */
 
-export interface ILinkedListNode<T> {
+export interface IDoublyLinkedListNode<T> {
     value: T;
-    next: ILinkedListNode<T> | null;
+    next: IDoublyLinkedListNode<T> | null;
+    prev: IDoublyLinkedListNode<T> | null;
 }
 
-type MutationResult<T> = [success: boolean, list: ILinkedList<T> | null];
-type RetrievalResult<T> = [node: ILinkedListNode<T> | null, index: number | null];
+type MutationResult<T> = [success: boolean, list: IDoublyLinkedList<T> | null];
+type RetrievalResult<T> = [node: IDoublyLinkedListNode<T> | null, index: number | null];
 type StringIndexable<T> = { [key: string]: unknown };
 
-export interface ILinkedList<T> {
+export interface IDoublyLinkedList<T> {
     // Properties
-    items: ILinkedListNode<T>[];
+    items: IDoublyLinkedListNode<T>[];
 
     // Retrieval Functions
 
@@ -89,17 +90,23 @@ export interface ILinkedList<T> {
     size(): number;
 }
 
-export function LinkedList<T = number>(...initValues: T[]) {
+export function DoublyLinkedList<T = number>(...initValues: T[]) {
 
     // first create them unlinked so the space is allocated and the array is fully constructed
-    const itemsUnlinked: ILinkedListNode<T>[] = initValues.map((v: T) => ({ value: v, next: null}) as ILinkedListNode<T>);
+    const itemsUnlinked: IDoublyLinkedListNode<T>[] = initValues.map((v: T) => ({ value: v, next: null}) as IDoublyLinkedListNode<T>);
 
     const items = [...itemsUnlinked];
 
     // relink all items in reverse direction to ensure deep links
-    for (let i = itemsUnlinked.length - 1; i >= 0; i--) {
-        items[i].next = i < itemsUnlinked.length - 1 ? items[i + 1] : null
+    function linkItems() {
+        for (let i = itemsUnlinked.length - 1; i >= 0; i--) {
+            items[i].next = i < itemsUnlinked.length - 1 ? items[i + 1] : null
+            items[i].prev = i > 0 ? items[i - 1] : null
+        }
     }
+
+    linkItems();
+    linkItems();
 
     // seal and freeze items array to prevent direct modification
     Object.freeze(items);
@@ -266,7 +273,7 @@ export function LinkedList<T = number>(...initValues: T[]) {
             i = i + 1;
         } while (current?.next && i < size() - before.length);
 
-        const newList = LinkedList<T>(...(before.concat(...values).concat(after)));
+        const newList = DoublyLinkedList<T>(...(before.concat(...values).concat(after)));
 
         return [true, newList];
     }
@@ -283,7 +290,7 @@ export function LinkedList<T = number>(...initValues: T[]) {
 
         if (removed === 0) return [false, null];
 
-        const newList = LinkedList<T>(...newItems.filter(v => v !== null) as T[]);
+        const newList = DoublyLinkedList<T>(...newItems.filter(v => v !== null) as T[]);
         return [true, newList];
     }
 

@@ -1,4 +1,4 @@
-import { LinkedList } from "./linked-list";
+import { DoublyLinkedList } from ".";
 
 const randBetween = (lower: number, upper: number) => {
     if (lower < 0 || !Number.isInteger(lower)) {
@@ -16,14 +16,14 @@ const randBetween = (lower: number, upper: number) => {
     return Math.floor(Math.random() * (upper - lower)) + lower;
 }
 
-describe('LinkedList', () => {
+describe('DoublyLinkedList', () => {
     it('should initialize', () => {
-        expect(() => LinkedList()).not.toThrow();
+        expect(() => DoublyLinkedList()).not.toThrow();
     });
 
     describe('ILinkedListNode<T>', () => {
         it('should have the properties "next" and "value"', () => {
-            let initial = LinkedList(1, 2, 3);
+            let initial = DoublyLinkedList(1, 2, 3);
 
             for (let i = 0; i < initial.size(); i++) {
                 const [node, index] = initial.at(i);
@@ -33,11 +33,12 @@ describe('LinkedList', () => {
 
                 expect(node).toHaveProperty("value");
                 expect(node).toHaveProperty("next");
+                expect(node).toHaveProperty("prev");
             }
         });
 
-        it('should have consistent forward linkage', () => {
-            let initial = LinkedList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        it('should traverse forward if next is not null', () => {
+            let initial = DoublyLinkedList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
             for (let i = 0; i < initial.size(); i++) {
                 const [node, index] = initial.at(i);
@@ -61,17 +62,69 @@ describe('LinkedList', () => {
                     expect(node?.next?.next?.next).toBeFalsy();
             }
         });
+
+        it('should have consistent forward linkage', () => {
+            let initial = DoublyLinkedList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+            for (let i = 0; i < initial.size(); i++) {
+                const [node, index] = initial.at(i);
+
+                expect(node).toBeDefined();
+                expect(index).toBe(i);
+
+                if (i < initial.size() - 1)
+                    expect(node?.next).toBe(initial.items[i + 1]);
+                else
+                    expect(node?.next).toBeFalsy();
+                
+                if (i < initial.size() - 2)
+                    expect(node?.next?.next).toBe(initial.items[i + 2]);
+                else
+                    expect(node?.next?.next).toBeFalsy();
+
+                if (i < initial.size() - 3)
+                    expect(node?.next?.next?.next).toBe(initial.items[i + 3]);
+                else
+                    expect(node?.next?.next?.next).toBeFalsy();
+            }
+        });
+
+        it('should have consistent backward linkage', () => {
+            let initial = DoublyLinkedList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+            for (let i = 0; i < initial.size(); i++) {
+                const [node, index] = initial.at(i);
+
+                expect(node).toBeDefined();
+                expect(index).toBe(i);
+
+                if (i > 0)
+                    expect(node?.prev).toBe(initial.items[i - 1]);
+                else
+                    expect(node?.prev).toBeFalsy();
+                
+                if (i > 1)
+                    expect(node?.prev?.prev).toBe(initial.items[i - 2]);
+                else
+                    expect(node?.prev?.prev).toBeFalsy();
+
+                if (i > 2)
+                    expect(node?.prev?.prev?.prev).toBe(initial.items[i - 3]);
+                else
+                    expect(node?.prev?.prev?.prev).toBeFalsy();
+            }
+        });
     })
 
-    describe('LinkedList::isEmpty()', () => {
+    describe('DoublyLinkedList::isEmpty()', () => {
         it('should be empty on init', () => {
-            const list = LinkedList();
+            const list = DoublyLinkedList();
 
             expect(list.isEmpty()).toBe(true);
         });
 
         it('should not be empty after adding an item to the head', () => {
-            const initial = LinkedList();
+            const initial = DoublyLinkedList();
 
             expect(initial.isEmpty()).toBe(true);
 
@@ -81,7 +134,7 @@ describe('LinkedList', () => {
         });
 
         it('should not be empty after adding items, but should be empty after removing all of them', () => {
-            const initial = LinkedList();
+            const initial = DoublyLinkedList();
 
             expect(initial.isEmpty()).toBe(true);
 
@@ -108,21 +161,21 @@ describe('LinkedList', () => {
         });
     });
 
-    describe('LinkedList::size()', () => {
+    describe('DoublyLinkedList::size()', () => {
         it ('should have a size of 0 when initialized', () => {
-            const initial = LinkedList();
+            const initial = DoublyLinkedList();
 
             expect(initial.size()).toBe(0);
         });
 
         it ('should have a size of 5 when 5 items are added on init', () => {
-            const initial = LinkedList(1, 2, 3, 4, 5);
+            const initial = DoublyLinkedList(1, 2, 3, 4, 5);
 
             expect(initial.size()).toBe(5);
         });
 
         it ('should have a size of 5 when 3 items are added on init and 2 are added to head after', () => {
-            const initial = LinkedList(1, 2, 3);
+            const initial = DoublyLinkedList(1, 2, 3);
 
             expect(initial.size()).toBe(3);
 
@@ -132,7 +185,7 @@ describe('LinkedList', () => {
         });
 
         it ('should have a size of 5 when initialized with 5 items, and decrease in size as all are removed', () => {
-            let current = LinkedList(1, 2, 3, 4, 5);
+            let current = DoublyLinkedList(1, 2, 3, 4, 5);
 
             expect(current.size()).toBe(5);
 
@@ -146,9 +199,9 @@ describe('LinkedList', () => {
         });
     });
     
-    describe('LinkedList::head()', () => {
+    describe('DoublyLinkedList::head()', () => {
         it('should return a null head for empty list', () => {
-            let initial = LinkedList();
+            let initial = DoublyLinkedList();
 
             let [node, index] = initial.head();
             expect(node).toBe(null);
@@ -156,7 +209,7 @@ describe('LinkedList', () => {
         })
 
         it('should return correct head for list with 1 item', () => {
-            let initial = LinkedList();
+            let initial = DoublyLinkedList();
 
             let [node, index] = initial.head();
             expect(node).toBe(null);
@@ -164,7 +217,7 @@ describe('LinkedList', () => {
         });
 
         it('should return correct head for list with 3 items', () => {
-            let initial = LinkedList(1, 2, 3);
+            let initial = DoublyLinkedList(1, 2, 3);
 
             let [node, index] = initial.head();
             expect(node?.value).toBe(1);
@@ -174,7 +227,7 @@ describe('LinkedList', () => {
         });
 
         it('should return correct head for list with 5 items', () => {
-            let initial = LinkedList(1, 2, 3, 4, 5);
+            let initial = DoublyLinkedList(1, 2, 3, 4, 5);
 
             let [node, index] = initial.head();
             expect(node?.value).toBe(1);
@@ -186,7 +239,7 @@ describe('LinkedList', () => {
         });
 
         it('should return updated head when the current head is removed', () => {
-            let initial = LinkedList(1, 2, 3, 4, 5);
+            let initial = DoublyLinkedList(1, 2, 3, 4, 5);
             expect(initial.size()).toBe(5);
 
             let [node, index] = initial.head();
@@ -206,9 +259,9 @@ describe('LinkedList', () => {
         });
     });
 
-    describe('LinkedList::tail()', () => {
+    describe('DoublyLinkedList::tail()', () => {
         it('should return a null tail for empty list', () => {
-            let initial = LinkedList();
+            let initial = DoublyLinkedList();
             expect(initial.size()).toBe(0);
 
             let [node, index] = initial.tail();
@@ -217,7 +270,7 @@ describe('LinkedList', () => {
         });
 
         it ('should return correct tail for list with 1 item', () => {
-            let initial = LinkedList(1);
+            let initial = DoublyLinkedList(1);
             expect(initial.size()).toBe(1);
 
             let [node, index] = initial.tail();
@@ -226,7 +279,7 @@ describe('LinkedList', () => {
         });
 
         it ('should return correct tail for list with 3 items', () => {
-            let initial = LinkedList(1, 2, 3);
+            let initial = DoublyLinkedList(1, 2, 3);
             expect(initial.size()).toBe(3);
 
             let [node, index] = initial.tail();
@@ -235,7 +288,7 @@ describe('LinkedList', () => {
         });
 
         it ('should return correct tail for list with 5 items', () => {
-            let initial = LinkedList(1, 2, 3, 4, 5);
+            let initial = DoublyLinkedList(1, 2, 3, 4, 5);
             expect(initial.size()).toBe(5);
 
             let [node, index] = initial.tail();
@@ -244,7 +297,7 @@ describe('LinkedList', () => {
         });
 
         it ('should return updated tail when tail is removed', () => {
-            let initial = LinkedList(1, 2, 3, 4, 5);
+            let initial = DoublyLinkedList(1, 2, 3, 4, 5);
             expect(initial.size()).toBe(5);
 
             let [node, index] = initial.tail();
@@ -264,9 +317,9 @@ describe('LinkedList', () => {
         });
     });
 
-    describe('LinkedList::find(number)', () => {
+    describe('DoublyLinkedList::find(number)', () => {
         it('should return null when the list is empty', () => {
-            let initial = LinkedList();
+            let initial = DoublyLinkedList();
 
             expect(initial.size()).toBe(0);
 
@@ -276,7 +329,7 @@ describe('LinkedList', () => {
         });
 
         it('should find the correct value given a list with 5 elements and no duplicated values', () => {
-            let initial = LinkedList(5, 2, 19, 6, 11);
+            let initial = DoublyLinkedList(5, 2, 19, 6, 11);
 
             expect(initial.size()).toBe(5);
             
@@ -286,7 +339,7 @@ describe('LinkedList', () => {
         });
 
         it('should find the first correct value given a list with 5 elements and 1 duplicated value', () => {
-            let initial = LinkedList(5, 25, 19, 6, 25);
+            let initial = DoublyLinkedList(5, 25, 19, 6, 25);
 
             expect(initial.size()).toBe(5);
             
@@ -301,7 +354,7 @@ describe('LinkedList', () => {
                 { name: 'Mark', age: 43, preferences: { theme: 'dark', mfa: true }},
                 { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true }},
             ];
-            const initial = LinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
+            const initial = DoublyLinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
 
             expect(initial.size()).toBe(3);
 
@@ -318,7 +371,7 @@ describe('LinkedList', () => {
                 { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
                 { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true }},
             ];
-            const initial = LinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
+            const initial = DoublyLinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
 
             expect(initial.size()).toBe(3);
 
@@ -335,7 +388,7 @@ describe('LinkedList', () => {
                 { name: 'John', age: 45, preferences: { theme: 'light', mfa: true }}, // mfa is set to true here, so it should not match
                 { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true }},
             ];
-            const initial = LinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
+            const initial = DoublyLinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
 
             expect(initial.size()).toBe(3);
 
@@ -352,7 +405,7 @@ describe('LinkedList', () => {
                 { name: 'George', age: 45, preferences: { theme: 'light', mfa: true }}, // mfa is set to true here, so it should not match
                 { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true }},
             ];
-            const initial = LinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
+            const initial = DoublyLinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
 
             expect(initial.size()).toBe(3);
 
@@ -363,7 +416,7 @@ describe('LinkedList', () => {
         });
 
         it('should fail find a value when no deep match can be found in a list of 3 object elements and no duplicated values', () => {
-            const initial = LinkedList(
+            const initial = DoublyLinkedList(
                 { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
                 { name: 'Mark', age: 43, preferences: { theme: 'dark', mfa: true }},
                 { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true }},
@@ -379,9 +432,9 @@ describe('LinkedList', () => {
         });
     });
 
-    describe('LinkedList::at(number)', () => {
+    describe('DoublyLinkedList::at(number)', () => {
         it('should return null when the list is empty', () => {
-            let initial = LinkedList();
+            let initial = DoublyLinkedList();
 
             expect(initial.size()).toBe(0);
 
@@ -391,7 +444,7 @@ describe('LinkedList', () => {
         });
 
         it('should return the correct value for list with 1 item', () => {
-            let initial = LinkedList(15);
+            let initial = DoublyLinkedList(15);
 
             expect(initial.size()).toBe(1);
 
@@ -401,7 +454,7 @@ describe('LinkedList', () => {
         });
 
         it('should return the correct value for list with 3 items', () => {
-            let initial = LinkedList(15, 7, 28);
+            let initial = DoublyLinkedList(15, 7, 28);
 
             expect(initial.size()).toBe(3);
 
@@ -411,7 +464,7 @@ describe('LinkedList', () => {
         });
 
         it('should return the correct value after deleting values in the middle', () => {
-            let initial = LinkedList(15, 7, 28, 18, 10);
+            let initial = DoublyLinkedList(15, 7, 28, 18, 10);
 
             expect(initial.size()).toBe(5);
 
@@ -440,7 +493,7 @@ describe('LinkedList', () => {
         });
 
         it('should return safely but non-successfully given an index that does not exist in the linked list', () => {
-            let initial = LinkedList(15, 7, 28, 18, 10);
+            let initial = DoublyLinkedList(15, 7, 28, 18, 10);
 
             expect(initial.size()).toBe(5);
             
@@ -451,9 +504,9 @@ describe('LinkedList', () => {
 
     });
 
-    describe('LinkedList::addHead(...number[])', () => {
+    describe('DoublyLinkedList::addHead(...number[])', () => {
         it('should return an updated list when adding a single item to the tail of a list', () => {
-            let initial = LinkedList();
+            let initial = DoublyLinkedList();
             
             expect(initial.size()).toBe(0);
 
@@ -465,7 +518,7 @@ describe('LinkedList', () => {
         });
 
         it('should return an updated list when adding multiple items to the tail of a list at the same time', () => {
-            let initial = LinkedList();
+            let initial = DoublyLinkedList();
             
             expect(initial.size()).toBe(0);
 
@@ -479,7 +532,7 @@ describe('LinkedList', () => {
         });
 
         it('should return a correct list when adding a single item to the tail of a list with 2 items', () => {
-            let initial = LinkedList(35, 62);
+            let initial = DoublyLinkedList(35, 62);
 
             expect(initial.size()).toBe(2);
 
@@ -494,7 +547,7 @@ describe('LinkedList', () => {
         });
 
         it('should return a correct list when adding multiple items to the tail of a list with 2 items', () => {
-            let initial = LinkedList(35, 62);
+            let initial = DoublyLinkedList(35, 62);
 
             expect(initial.size()).toBe(2);
 
@@ -516,7 +569,7 @@ describe('LinkedList', () => {
     
             // function that runs a single iteration of this test
             function runInsertion(): number {
-                const initial = LinkedList();
+                const initial = DoublyLinkedList();
 
                 // insert 10,000 elements within 50ms
                 let current = initial;
@@ -547,7 +600,7 @@ describe('LinkedList', () => {
 
             // function that runs a single iteration of this test
             function runFindTest(): number {
-                const initial = LinkedList();
+                const initial = DoublyLinkedList();
                 let current = initial;
                 for (let i = 0; i < itemCount; i++) {
                     let [,updatedList] = current.addHead(randBetween(1, 5));
@@ -576,9 +629,9 @@ describe('LinkedList', () => {
         });
     });
 
-    describe('LinkedList::addTail(...number[])', () => {
+    describe('DoublyLinkedList::addTail(...number[])', () => {
         it('should return an updated list when adding a single item to the tail of a list', () => {
-            let initial = LinkedList();
+            let initial = DoublyLinkedList();
             
             expect(initial.size()).toBe(0);
 
@@ -590,7 +643,7 @@ describe('LinkedList', () => {
         });
 
         it('should return an updated list when adding multiple items to the tail of a list at the same time', () => {
-            let initial = LinkedList();
+            let initial = DoublyLinkedList();
             
             expect(initial.size()).toBe(0);
 
@@ -604,7 +657,7 @@ describe('LinkedList', () => {
         });
 
         it('should return a correct list when adding a single item to the tail of a list with 2 items', () => {
-            let initial = LinkedList(35, 62);
+            let initial = DoublyLinkedList(35, 62);
 
             expect(initial.size()).toBe(2);
 
@@ -619,7 +672,7 @@ describe('LinkedList', () => {
         });
 
         it('should return a correct list when adding multiple items to the tail of a list with 2 items', () => {
-            let initial = LinkedList(35, 62);
+            let initial = DoublyLinkedList(35, 62);
 
             expect(initial.size()).toBe(2);
 
@@ -635,9 +688,9 @@ describe('LinkedList', () => {
         });
     });
 
-    describe('LinkedList::remove(...number[])', () => {
+    describe('DoublyLinkedList::remove(...number[])', () => {
         it('should return safely but non-successfully when removing from an empty list', () => {
-            let initial = LinkedList();
+            let initial = DoublyLinkedList();
 
             expect(initial.size()).toBe(0);
 
@@ -647,7 +700,7 @@ describe('LinkedList', () => {
         });
 
         it('should return safely but non-successfully when removing from a list that does not contain the value', () => {
-            let initial = LinkedList(55, 62, 99);
+            let initial = DoublyLinkedList(55, 62, 99);
 
             expect(initial.size()).toBe(3);
 
@@ -657,7 +710,7 @@ describe('LinkedList', () => {
         });
 
         it('should successfully remove the first matching value when removing a single value from a list that contains all values and no duplicates', () => {
-            let initial = LinkedList(55, 62, 99);
+            let initial = DoublyLinkedList(55, 62, 99);
 
             expect(initial.size()).toBe(3);
 
@@ -667,7 +720,7 @@ describe('LinkedList', () => {
         });
 
         it('should successfully remove the first matching value when removing a single value from a list that contains all values and 1 duplicated value', () => {
-            let initial = LinkedList(11, 55, 55, 62);
+            let initial = DoublyLinkedList(11, 55, 55, 62);
 
             expect(initial.size()).toBe(4);
             expect(initial?.at(0)[0]?.value).toBe(11);
@@ -684,7 +737,7 @@ describe('LinkedList', () => {
         });
 
         it('should successfully remove the first of each matching value when removing multiple values from a list that contains all values and no duplicates', () => {
-            let initial = LinkedList(55, 62, 99);
+            let initial = DoublyLinkedList(55, 62, 99);
 
             expect(initial.size()).toBe(3);
 
@@ -694,7 +747,7 @@ describe('LinkedList', () => {
         });
 
         it('should successfully remove the first of each matching value when removing multiple values from a list that contains all values and 1 duplicated value', () => {
-            let initial = LinkedList(11, 55, 55, 62);
+            let initial = DoublyLinkedList(11, 55, 55, 62);
 
             expect(initial.size()).toBe(4);
             expect(initial?.at(0)[0]?.value).toBe(11);
@@ -710,7 +763,7 @@ describe('LinkedList', () => {
         });
 
         it('should successfully remove the the first of each matching value when removing multiple values from a list that contains all but one value and no duplicates', () => {
-            let initial = LinkedList(11, 55, 62);
+            let initial = DoublyLinkedList(11, 55, 62);
 
             expect(initial.size()).toBe(3);
             expect(initial?.at(0)[0]?.value).toBe(11);
@@ -725,9 +778,9 @@ describe('LinkedList', () => {
         });
     });
 
-    describe('LinkedList::delete(...number[])', () => {
+    describe('DoublyLinkedList::delete(...number[])', () => {
         it('should return safely but non-successfully when deleting a node at an index that does not exist', () => {
-            let initial = LinkedList();
+            let initial = DoublyLinkedList();
 
             expect(initial.size()).toBe(0);
             
@@ -737,7 +790,7 @@ describe('LinkedList', () => {
         });
 
         it('should successfully delete a single index from a list and update the head', () => {
-            let initial = LinkedList(14, 67, 10);
+            let initial = DoublyLinkedList(14, 67, 10);
 
             expect(initial.size()).toBe(3);
             expect(initial?.at(0)[0]?.value).toBe(14);
@@ -754,7 +807,7 @@ describe('LinkedList', () => {
         });
 
         it('should successfully delete multiple indicies from a list and update the head', () => {
-            let initial = LinkedList(14, 67, 10, 99, 45);
+            let initial = DoublyLinkedList(14, 67, 10, 99, 45);
 
             expect(initial.size()).toBe(5);
             expect(initial?.at(0)[0]?.value).toBe(14);
@@ -773,7 +826,7 @@ describe('LinkedList', () => {
         });
 
         it('should successfully delete multiple indicies from a list even if one specified index does not exist', () => {
-            let initial = LinkedList(14, 67, 10, 99, 45);
+            let initial = DoublyLinkedList(14, 67, 10, 99, 45);
 
             expect(initial.size()).toBe(5);
             expect(initial?.at(0)[0]?.value).toBe(14);
@@ -793,9 +846,9 @@ describe('LinkedList', () => {
         });
     })
 
-    describe('LinkedList::insert(number, ...T[])', () => {
+    describe('DoublyLinkedList::insert(number, ...T[])', () => {
         it('should add an item to the head of the linked list', () => {
-            let initial = LinkedList(1, 2, 3);
+            let initial = DoublyLinkedList(1, 2, 3);
 
             expect(initial.size()).toBe(3);
             expect(initial.at(0)[0]?.value).toBe(1);
@@ -814,7 +867,7 @@ describe('LinkedList', () => {
         });
 
         it('should add an item to the tail of the linked list', () => {
-            let initial = LinkedList(1, 2, 3);
+            let initial = DoublyLinkedList(1, 2, 3);
 
             expect(initial.size()).toBe(3);
             expect(initial.at(0)[0]?.value).toBe(1);
@@ -833,7 +886,7 @@ describe('LinkedList', () => {
         })
 
         it('should add an item to the middle of the linked list', () => {
-            let initial = LinkedList(1, 2, 3);
+            let initial = DoublyLinkedList(1, 2, 3);
 
             expect(initial.size()).toBe(3);
             expect(initial.at(0)[0]?.value).toBe(1);
@@ -850,7 +903,7 @@ describe('LinkedList', () => {
         })
 
         it('should fail to an item if the starting index is greater than the size of the existing list', () => {
-            let initial = LinkedList(1, 2, 3);
+            let initial = DoublyLinkedList(1, 2, 3);
 
             expect(initial.size()).toBe(3);
             expect(initial.at(0)[0]?.value).toBe(1);
@@ -863,7 +916,7 @@ describe('LinkedList', () => {
         })
 
         it('should fail to an item if the starting index is less than 0', () => {
-            let initial = LinkedList(1, 2, 3);
+            let initial = DoublyLinkedList(1, 2, 3);
 
             expect(initial.size()).toBe(3);
             expect(initial.at(0)[0]?.value).toBe(1);
@@ -876,9 +929,9 @@ describe('LinkedList', () => {
         })
     });
 
-    describe('LinkedList::values()', () => {
+    describe('DoublyLinkedList::values()', () => {
         it('should return an empty array if the linked list is empty', () => {
-            let initial = LinkedList();
+            let initial = DoublyLinkedList();
 
             expect(initial.size()).toBe(0);
 
@@ -887,7 +940,7 @@ describe('LinkedList', () => {
         });
 
         it('should return an array of the same size with the same values', () => {
-            let initial = LinkedList(1, 2, 3);
+            let initial = DoublyLinkedList(1, 2, 3);
 
             expect(initial.size()).toBe(3);
             expect(initial.at(0)[0]?.value).toBe(1);
