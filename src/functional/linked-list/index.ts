@@ -45,25 +45,25 @@ export interface ILinkedList<T> {
      * Adds an element to the front of the linked list, becoming the first element.
      * @param value
      */
-    addHead(value: T): MutationResult<T>;
+    addHead(...value: T[]): MutationResult<T>;
 
     /**
      * Adds an element to the back of the linked list, becoming the last element.
      * @param value 
      */
-    addTail(value: T): MutationResult<T>;
+    addTail(...value: T[]): MutationResult<T>;
 
     /**
      * Finds an element by value, ensuring deep equality if T is an object type, and removes it then relinks the list.
      * @param value
      */
-    remove(value: T): MutationResult<T>;
+    remove(...value: T[]): MutationResult<T>;
 
     /**
      * Deletes an element at a given value then relinks the list.
      * @param value
      */
-    delete(index: number): MutationResult<T>;
+    delete(...index: number[]): MutationResult<T>;
 
     // Utility Functions
 
