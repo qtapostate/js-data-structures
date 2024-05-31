@@ -215,15 +215,36 @@ export function LinkedList<T = number>(...values: T[]) {
         }
     }
 
-    const insert = (at: number, ...values: T[]): MutationResult<T> => {
-        if (at < 0 || at >= size()) {
+    const insert = (startingIndex: number, ...values: T[]): MutationResult<T> => {
+        if (startingIndex < 0 || startingIndex >= size()) {
             return [false, null];
         }
 
         try {
-            const before = items.map(v => v.value).slice(0, at);
-            const after = items.map(v => v.value).slice(at);
-            const newList = LinkedList<T>(...before.concat(...values).concat(after));
+            const before: T[] = [];
+            const after: T[] = [];
+
+            let i = 0;
+            let current = head()[0];
+
+            // get the section of items before the specified index
+            do {
+                if (i !== 0) current = current?.next!;
+
+                before[i] = current?.value!;
+            } while (current?.next && i < startingIndex);
+
+            i = 0;
+            current = at(startingIndex)[0];
+
+            // get the section of items after the specified index
+            do {
+                if (i !== 0) current = current?.next!;
+
+                after[i] = current?.value!;
+            } while (current?.next && i < size());
+
+            const newList = LinkedList<T>(...(before.concat(...values).concat(after)));
 
             return [true, newList];
         } catch {
