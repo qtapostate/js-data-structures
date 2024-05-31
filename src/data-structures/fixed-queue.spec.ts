@@ -1,4 +1,4 @@
-import { QueueCapacityReachedError, QueueEmptyError } from "./errors";
+import { InvalidSizeError, QueueCapacityReachedError, QueueEmptyError } from "./errors";
 import { FixedQueue } from "./fixed-queue";
 
 describe('Fixed', () => {
@@ -37,6 +37,10 @@ describe('Fixed', () => {
 
     it('should throw an error when initializing with more values than the specified capacity', () => {
         expect(() => FixedQueue(3, 10, 20, 30, 40, 50, 60, 70, 80)).toThrow(new QueueCapacityReachedError());
+    })
+
+    it('should throw a RangeError if the max size argument is < 0', () => {
+        expect(() => FixedQueue(-1)).toThrow(new InvalidSizeError());
     })
 
     describe('FixedQueue::front()', () => {

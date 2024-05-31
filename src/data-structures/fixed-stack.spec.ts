@@ -1,4 +1,4 @@
-import { StackOverflowError, StackUnderflowError } from "./errors"
+import { InvalidSizeError, StackOverflowError, StackUnderflowError } from "./errors"
 import { FixedStack } from "./fixed-stack";
 
 describe('FixedStack', () => {
@@ -24,7 +24,7 @@ describe('FixedStack', () => {
     })
 
     it('should throw a RangeError if the max size argument is < 0', () => {
-        expect(() => FixedStack(-1)).toThrow(new RangeError)
+        expect(() => FixedStack(-1)).toThrow(new InvalidSizeError());
     })
 
     describe('FixedStack::push(T)', () => {
