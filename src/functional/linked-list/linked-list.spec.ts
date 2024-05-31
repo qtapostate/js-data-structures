@@ -841,7 +841,7 @@ describe('LinkedList', () => {
             expect(initial.size()).toBe(0);
 
             const array = initial.values();
-            expect(array).toBe([]);
+            expect(array).toStrictEqual([]);
         });
 
         it('should return an array of the same size with the same values', () => {
@@ -853,7 +853,7 @@ describe('LinkedList', () => {
             expect(initial.at(2)[0]?.value).toBe(3);
 
             const array = initial.values();
-            expect(array).toBe([1, 2, 3]);
+            expect(array).toStrictEqual([1, 2, 3]);
         });
     });
 })
