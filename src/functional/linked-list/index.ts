@@ -172,7 +172,7 @@ export function LinkedList<T = number>(...values: T[]) {
     }
 
     const at = (target: number): RetrievalResult<T> => {
-        if (target < 0 || target >= size()) return [null, null];
+        if (target < 0) return [null, null];
 
         let index = 0;
         const [headNode] = head();
@@ -208,60 +208,52 @@ export function LinkedList<T = number>(...values: T[]) {
             return [false, null];
         }
 
-        try {
-            const before: T[] = [];
-            const after: T[] = [];
+        const before: T[] = [];
+        const after: T[] = [];
 
-            let i = 0;
-            let current = head()[0];
+        let i = 0;
+        let current = head()[0];
 
-            // get the section of items before the specified index
-            do {
-                if (startingIndex === 0) break;
-                if (i !== 0) current = current?.next!;
+        // get the section of items before the specified index
+        do {
+            if (startingIndex === 0) break;
+            if (i !== 0) current = current?.next!;
 
-                before[i] = current?.value!;
-                i = i + 1;
-            } while (current?.next && i < startingIndex);
+            before[i] = current?.value!;
+            i = i + 1;
+        } while (current?.next && i < startingIndex);
 
-            i = 0;
-            current = at(startingIndex)[0];
+        i = 0;
+        current = at(startingIndex)[0];
 
-            // get the section of items after the specified index
-            do {
-                if (startingIndex === size()) break;
-                if (i !== 0) current = current?.next!;
+        // get the section of items after the specified index
+        do {
+            if (startingIndex === size()) break;
+            if (i !== 0) current = current?.next!;
 
-                after[i] = current?.value!;
-                i = i + 1;
-            } while (current?.next && i < size() - before.length);
+            after[i] = current?.value!;
+            i = i + 1;
+        } while (current?.next && i < size() - before.length);
 
-            const newList = LinkedList<T>(...(before.concat(...values).concat(after)));
+        const newList = LinkedList<T>(...(before.concat(...values).concat(after)));
 
-            return [true, newList];
-        } catch {
-            return [false, null];
-        }
+        return [true, newList];
     }
 
     function del(...indices: number[]): MutationResult<T> {
-        try {
-            const newItems: (T | null)[] = [...items].map(v => v.value);
-            let removed = 0;
-            indices.forEach((index) => {
-                if (index < size()) {
-                    newItems[index] = null;
-                    removed = removed + 1;
-                }
-            });
+        const newItems: (T | null)[] = [...items].map(v => v.value);
+        let removed = 0;
+        indices.forEach((index) => {
+            if (index < size()) {
+                newItems[index] = null;
+                removed = removed + 1;
+            }
+        });
 
-            if (removed === 0) return [false, null];
+        if (removed === 0) return [false, null];
 
-            const newList = LinkedList<T>(...newItems.filter(v => v !== null) as T[]);
-            return [true, newList];
-        } catch {
-            return [false, null];
-        }
+        const newList = LinkedList<T>(...newItems.filter(v => v !== null) as T[]);
+        return [true, newList];
     }
 
     function remove(...values: T[]): MutationResult<T> {

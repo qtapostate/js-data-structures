@@ -304,6 +304,22 @@ describe('LinkedList', () => {
             expect(index).toBe(0);
         });
 
+        it('should return safely but non-successfully given a near-deep match for a list of 3 object elements and no fully-matching value', () => {
+            const items = [
+                { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
+                { name: 'George', age: 45, preferences: { theme: 'light', mfa: true }}, // mfa is set to true here, so it should not match
+                { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true }},
+            ];
+            const initial = LinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
+
+            expect(initial.size()).toBe(3);
+
+            let [node, index] = initial.find({ name: 'John', age: 45, preferences: { theme: 'light', mfa: true }});
+            
+            expect(node).toBe(null);
+            expect(index).toBe(null);
+        });
+
         it('should fail find a value when no deep match can be found in a list of 3 object elements and no duplicated values', () => {
             const initial = LinkedList(
                 { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
@@ -380,6 +396,16 @@ describe('LinkedList', () => {
                 current = updatedList!;
             }
         });
+
+        it('should return safely but non-successfully given an index that does not exist in the linked list', () => {
+            let initial = LinkedList(15, 7, 28, 18, 10);
+
+            expect(initial.size()).toBe(5);
+            
+            const [node, index] = initial.at(8);
+            expect(node).toBe(null);
+            expect(index).toBe(null);
+        })
 
     });
 
