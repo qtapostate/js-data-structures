@@ -18,7 +18,7 @@ export interface IDynamicQueue<T> {
     size(): number;
 }
 
-export function DynamicQueue<T>(...initValues: T[]): IDynamicQueue<T> {
+export function DynamicQueue<T = number>(...initValues: T[]): IDynamicQueue<T> {
     const items = [ ...initValues ];
 
     // prevent direct modification of underlying array
@@ -54,7 +54,7 @@ export function DynamicQueue<T>(...initValues: T[]): IDynamicQueue<T> {
             throw new QueueEmptyError();
         }
 
-        const newQueue = DynamicQueue(...items.slice(0, size() > 2 ? size() - 2 : 1));
+        const newQueue = DynamicQueue(...items.slice(0, size() - 1));
         return [front(), newQueue];
     }
 
