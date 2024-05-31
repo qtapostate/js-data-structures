@@ -271,19 +271,37 @@ describe('LinkedList', () => {
         });
 
         it('should find the first correct value given a deep match for a list of 3 object elements and a duplicated value', () => {
-            const initial = LinkedList(
+            const items = [
                 { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
-                { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }}, // duplicated
-                { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true  }},
-            );
+                { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
+                { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true }},
+            ];
+            const initial = LinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
 
             expect(initial.size()).toBe(3);
 
-            let [node, index] = initial.find({ name: 'John', age: 45, preferences: { theme: 'light', mfa: false }});
+            let [node, index] = initial.find(items.at(0)!);
             
-            expect(node?.value).toStrictEqual({ name: 'John', age: 45, preferences: { theme: 'light', mfa: false }});
-            expect(node?.next?.value).toStrictEqual({ name: 'Mark', age: 43, preferences: { theme: 'dark', mfa: true }});
-            expect(index).toBe(0); // check that we match the first one
+            expect(node?.value).toStrictEqual(items.at(0)!);
+            expect(node?.next?.value).toStrictEqual(items.at(1)!);
+            expect(index).toBe(0);
+        });
+
+        it('should find the first correct value given a near-deep match for a list of 3 object elements and a duplicated value', () => {
+            const items = [
+                { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
+                { name: 'John', age: 45, preferences: { theme: 'light', mfa: true }}, // mfa is set to true here, so it should not match
+                { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true }},
+            ];
+            const initial = LinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
+
+            expect(initial.size()).toBe(3);
+
+            let [node, index] = initial.find(items.at(0)!);
+            
+            expect(node?.value).toStrictEqual(items.at(0)!);
+            expect(node?.next?.value).toStrictEqual(items.at(1)!);
+            expect(index).toBe(0);
         });
 
         it('should fail find a value when no deep match can be found in a list of 3 object elements and no duplicated values', () => {
@@ -421,6 +439,72 @@ describe('LinkedList', () => {
             expect(updatedList?.at(1)[0]?.value).toBe(21);
             expect(updatedList?.at(2)[0]?.value).toBe(35);
             expect(updatedList?.at(3)[0]?.value).toBe(62);
+        });
+
+        it('should add 1,000 items within an average of 50ms', () => {
+            const itemCount = 1000; // add this many items
+            const expectWithin = 50; // milliseconds
+            const testIterations = 50; // run this many test iterations
+    
+            // function that runs a single iteration of this test
+            function runInsertion(): number {
+                const initial = LinkedList();
+
+                // insert 10,000 elements within 50ms
+                let current = initial;
+                const insertionStart = Date.now();
+                for (let i = 0; i < itemCount; i++) {
+                    let [,updatedList] = current.addHead(randBetween(1, 5));
+                    current = updatedList!;
+                }
+                const insertionEnd = Date.now();
+
+                return (insertionEnd - insertionStart);
+            }
+
+            const tests: number[] = [];
+            for (let i = 0; i < testIterations; i++) {
+                tests.push(runInsertion());
+            }
+
+            const averageTime = tests.reduce((prev, next) => prev + next, 0) / tests.length;
+
+            expect(averageTime).toBeLessThanOrEqual(expectWithin);
+        });
+
+        it('should locate an item at a random index of a list with 1,000 elements within 50ms', () => {
+            const itemCount = 1000; // add this many items
+            const expectWithin = 50; // milliseconds
+            const testIterations = 50; // run this many test iterations
+
+            // function that runs a single iteration of this test
+            function runFindTest(): number {
+                const initial = LinkedList();
+                let current = initial;
+                for (let i = 0; i < itemCount; i++) {
+                    let [,updatedList] = current.addHead(randBetween(1, 5));
+                    current = updatedList!;
+                }
+
+                const randomIndex = randBetween(400, 1000);
+                const { value: findValue } = current.items.at(randomIndex)!;
+
+                // locate an item within 50ms
+                const findStart = Date.now();
+                const [node] = current.find(findValue);
+                const findEnd = Date.now();
+
+                return (findEnd - findStart);
+            }
+
+            const tests: number[] = [];
+            for (let i = 0; i < testIterations; i++) {
+                tests.push(runFindTest());
+            }
+
+            const averageTime = tests.reduce((prev, next) => prev + next, 0) / tests.length;
+
+            expect(averageTime).toBeLessThanOrEqual(expectWithin);
         });
     });
 
