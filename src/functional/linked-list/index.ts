@@ -45,25 +45,31 @@ export interface ILinkedList<T> {
      * Adds an element to the front of the linked list, becoming the first element.
      * @param value
      */
-    addHead(value: T): MutationResult<T>;
+    addHead(...value: T[]): MutationResult<T>;
+
+    /**
+     * Adds n elements to the linked list starting inclusively at a specified index, pushing other elements up by n positions
+     * @param value
+     */
+    insert(at: number, ...value: T[]): MutationResult<T>;
 
     /**
      * Adds an element to the back of the linked list, becoming the last element.
      * @param value 
      */
-    addTail(value: T): MutationResult<T>;
+    addTail(...value: T[]): MutationResult<T>;
 
     /**
      * Finds an element by value, ensuring deep equality if T is an object type, and removes it then relinks the list.
      * @param value
      */
-    remove(value: T): MutationResult<T>;
+    remove(...value: T[]): MutationResult<T>;
 
     /**
      * Deletes an element at a given value then relinks the list.
      * @param value
      */
-    delete(index: number): MutationResult<T>;
+    delete(...index: number[]): MutationResult<T>;
 
     // Utility Functions
 
@@ -103,11 +109,18 @@ export function LinkedList<T = number>(...values: T[]) {
 
     // deep equality for checking objects
     const deepEquals = <U extends { [k: string]: any } = T extends object ? T : never>(left: U, right: U): boolean => {
-        for (const key of Object.keys(left)) {
-            // recursive case: if we have an object property, recurse into child object
-            if (typeof left[key] === 'object' && !Array.isArray(left[key]) && !deepEquals(left[key], right[key])) return false;
+        const keys = new Set([
+            ...Object.keys(left),
+            ...Object.keys(right)
+        ]);
 
-            // base case: if we have a primitive type
+        // for each key
+        for (const key of keys) {
+            if (typeof left[key] !== typeof right[key]) return false;
+            if (typeof left[key] === 'object' && JSON.stringify(left[key]) !== JSON.stringify(right[key])) {
+                return false;
+            }
+
             if (!equals(left[key], right[key])) return false;
         }
 
@@ -159,7 +172,7 @@ export function LinkedList<T = number>(...values: T[]) {
     }
 
     const at = (target: number): RetrievalResult<T> => {
-        if (target < 0 || target >= size()) return [null, null];
+        if (target < 0) return [null, null];
 
         let index = 0;
         const [headNode] = head();
@@ -183,43 +196,64 @@ export function LinkedList<T = number>(...values: T[]) {
     }
 
     const addHead = (...value: T[]): MutationResult<T> => {
-        try {
-            const newList = LinkedList<T>(...[...value].concat(items.map((v: ILinkedListNode<T>) => v.value as T)));
-
-            return [true, newList]
-        } catch {
-            return [false, null];
-        }
+        return insert(0, ...value);
     };
 
     const addTail = (...value: T[]): MutationResult<T> => {
-        try {
-            const newList = LinkedList<T>(...items.map((v: ILinkedListNode<T>) => v.value as T).concat(...value));
+        return insert(size(), ...value);
+    }
 
-            return [true, newList];
-        } catch {
+    const insert = (startingIndex: number, ...values: T[]): MutationResult<T> => {
+        if (startingIndex < 0 || startingIndex > size()) {
             return [false, null];
         }
+
+        const before: T[] = [];
+        const after: T[] = [];
+
+        let i = 0;
+        let current = head()[0];
+
+        // get the section of items before the specified index
+        do {
+            if (startingIndex === 0) break;
+            if (i !== 0) current = current?.next!;
+
+            before[i] = current?.value!;
+            i = i + 1;
+        } while (current?.next && i < startingIndex);
+
+        i = 0;
+        current = at(startingIndex)[0];
+
+        // get the section of items after the specified index
+        do {
+            if (startingIndex === size()) break;
+            if (i !== 0) current = current?.next!;
+
+            after[i] = current?.value!;
+            i = i + 1;
+        } while (current?.next && i < size() - before.length);
+
+        const newList = LinkedList<T>(...(before.concat(...values).concat(after)));
+
+        return [true, newList];
     }
 
     function del(...indices: number[]): MutationResult<T> {
-        try {
-            const newItems: (T | null)[] = [...items].map(v => v.value);
-            let removed = 0;
-            indices.forEach((index) => {
-                if (index < size()) {
-                    newItems[index] = null;
-                    removed = removed + 1;
-                }
-            });
+        const newItems: (T | null)[] = [...items].map(v => v.value);
+        let removed = 0;
+        indices.forEach((index) => {
+            if (index < size()) {
+                newItems[index] = null;
+                removed = removed + 1;
+            }
+        });
 
-            if (removed === 0) return [false, null];
+        if (removed === 0) return [false, null];
 
-            const newList = LinkedList<T>(...newItems.filter(v => v !== null) as T[]);
-            return [true, newList];
-        } catch {
-            return [false, null];
-        }
+        const newList = LinkedList<T>(...newItems.filter(v => v !== null) as T[]);
+        return [true, newList];
     }
 
     function remove(...values: T[]): MutationResult<T> {
@@ -241,6 +275,7 @@ export function LinkedList<T = number>(...values: T[]) {
         at,
         addHead,
         addTail,
+        insert,
         remove,
         delete: del,
         isEmpty,

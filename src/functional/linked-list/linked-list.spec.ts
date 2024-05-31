@@ -252,6 +252,89 @@ describe('LinkedList', () => {
             expect(node?.value).toBe(25);
             expect(index).toBe(1);
         });
+
+        it('should find the first correct value given a deep match for a list of 3 object elements and no duplicated values', () => {
+            const items = [
+                { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
+                { name: 'Mark', age: 43, preferences: { theme: 'dark', mfa: true }},
+                { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true }},
+            ];
+            const initial = LinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
+
+            expect(initial.size()).toBe(3);
+
+            let [node, index] = initial.find(items.at(0)!);
+            
+            expect(node?.value).toStrictEqual({ name: 'John', age: 45, preferences: { theme: 'light', mfa: false }});
+            expect(node?.next?.value).toStrictEqual({ name: 'Mark', age: 43, preferences: { theme: 'dark', mfa: true }});
+            expect(index).toBe(0);
+        });
+
+        it('should find the first correct value given a deep match for a list of 3 object elements and a duplicated value', () => {
+            const items = [
+                { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
+                { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
+                { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true }},
+            ];
+            const initial = LinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
+
+            expect(initial.size()).toBe(3);
+
+            let [node, index] = initial.find(items.at(0)!);
+            
+            expect(node?.value).toStrictEqual(items.at(0)!);
+            expect(node?.next?.value).toStrictEqual(items.at(1)!);
+            expect(index).toBe(0);
+        });
+
+        it('should find the first correct value given a near-deep match for a list of 3 object elements and a duplicated value', () => {
+            const items = [
+                { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
+                { name: 'John', age: 45, preferences: { theme: 'light', mfa: true }}, // mfa is set to true here, so it should not match
+                { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true }},
+            ];
+            const initial = LinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
+
+            expect(initial.size()).toBe(3);
+
+            let [node, index] = initial.find(items.at(0)!);
+            
+            expect(node?.value).toStrictEqual(items.at(0)!);
+            expect(node?.next?.value).toStrictEqual(items.at(1)!);
+            expect(index).toBe(0);
+        });
+
+        it('should return safely but non-successfully given a near-deep match for a list of 3 object elements and no fully-matching value', () => {
+            const items = [
+                { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
+                { name: 'George', age: 45, preferences: { theme: 'light', mfa: true }}, // mfa is set to true here, so it should not match
+                { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true }},
+            ];
+            const initial = LinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
+
+            expect(initial.size()).toBe(3);
+
+            let [node, index] = initial.find({ name: 'John', age: 45, preferences: { theme: 'light', mfa: true }});
+            
+            expect(node).toBe(null);
+            expect(index).toBe(null);
+        });
+
+        it('should fail find a value when no deep match can be found in a list of 3 object elements and no duplicated values', () => {
+            const initial = LinkedList(
+                { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
+                { name: 'Mark', age: 43, preferences: { theme: 'dark', mfa: true }},
+                { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true }},
+            );
+
+            expect(initial.size()).toBe(3);
+
+            // mfa is not the correct value, so we should not find this item
+            let [node, index] = initial.find({ name: 'John', age: 45, preferences: { theme: 'light', mfa: false }});
+
+            expect(node).toBe(null);
+            expect(index).toBe(null);
+        });
     });
 
     describe('LinkedList::at(number)', () => {
@@ -313,6 +396,17 @@ describe('LinkedList', () => {
                 current = updatedList!;
             }
         });
+
+        it('should return safely but non-successfully given an index that does not exist in the linked list', () => {
+            let initial = LinkedList(15, 7, 28, 18, 10);
+
+            expect(initial.size()).toBe(5);
+            
+            const [node, index] = initial.at(8);
+            expect(node).toBe(null);
+            expect(index).toBe(null);
+        })
+
     });
 
     describe('LinkedList::addHead(...number[])', () => {
@@ -371,6 +465,72 @@ describe('LinkedList', () => {
             expect(updatedList?.at(1)[0]?.value).toBe(21);
             expect(updatedList?.at(2)[0]?.value).toBe(35);
             expect(updatedList?.at(3)[0]?.value).toBe(62);
+        });
+
+        it('should add 1,000 items within an average of 50ms', () => {
+            const itemCount = 1000; // add this many items
+            const expectWithin = 50; // milliseconds
+            const testIterations = 50; // run this many test iterations
+    
+            // function that runs a single iteration of this test
+            function runInsertion(): number {
+                const initial = LinkedList();
+
+                // insert 10,000 elements within 50ms
+                let current = initial;
+                const insertionStart = Date.now();
+                for (let i = 0; i < itemCount; i++) {
+                    let [,updatedList] = current.addHead(randBetween(1, 5));
+                    current = updatedList!;
+                }
+                const insertionEnd = Date.now();
+
+                return (insertionEnd - insertionStart);
+            }
+
+            const tests: number[] = [];
+            for (let i = 0; i < testIterations; i++) {
+                tests.push(runInsertion());
+            }
+
+            const averageTime = tests.reduce((prev, next) => prev + next, 0) / tests.length;
+
+            expect(averageTime).toBeLessThanOrEqual(expectWithin);
+        });
+
+        it('should locate an item at a random index of a list with 1,000 elements within 50ms', () => {
+            const itemCount = 1000; // add this many items
+            const expectWithin = 50; // milliseconds
+            const testIterations = 50; // run this many test iterations
+
+            // function that runs a single iteration of this test
+            function runFindTest(): number {
+                const initial = LinkedList();
+                let current = initial;
+                for (let i = 0; i < itemCount; i++) {
+                    let [,updatedList] = current.addHead(randBetween(1, 5));
+                    current = updatedList!;
+                }
+
+                const randomIndex = randBetween(400, 1000);
+                const { value: findValue } = current.items.at(randomIndex)!;
+
+                // locate an item within 50ms
+                const findStart = Date.now();
+                const [node] = current.find(findValue);
+                const findEnd = Date.now();
+
+                return (findEnd - findStart);
+            }
+
+            const tests: number[] = [];
+            for (let i = 0; i < testIterations; i++) {
+                tests.push(runFindTest());
+            }
+
+            const averageTime = tests.reduce((prev, next) => prev + next, 0) / tests.length;
+
+            expect(averageTime).toBeLessThanOrEqual(expectWithin);
         });
     });
 
@@ -590,4 +750,87 @@ describe('LinkedList', () => {
             expect(updatedList?.at(3)[0]?.value).toBe(45);
         });
     })
+
+    describe('LinkedList::insert(number, ...T[])', () => {
+        it('should add an item to the head of the linked list', () => {
+            let initial = LinkedList(1, 2, 3);
+
+            expect(initial.size()).toBe(3);
+            expect(initial.at(0)[0]?.value).toBe(1);
+            expect(initial.at(1)[0]?.value).toBe(2);
+            expect(initial.at(2)[0]?.value).toBe(3);
+            expect(initial.head()[0]?.value).toBe(1);
+
+            const [success, updatedList] = initial.insert(0, 5);
+            expect(success).toBe(true);
+            expect(updatedList!.size()).toBe(4);
+            expect(updatedList!.at(0)[0]?.value).toBe(5);
+            expect(updatedList!.at(1)[0]?.value).toBe(1);
+            expect(updatedList!.at(2)[0]?.value).toBe(2);
+            expect(updatedList!.at(3)[0]?.value).toBe(3);
+            expect(updatedList?.head()[0]?.value).toBe(5);
+        });
+
+        it('should add an item to the tail of the linked list', () => {
+            let initial = LinkedList(1, 2, 3);
+
+            expect(initial.size()).toBe(3);
+            expect(initial.at(0)[0]?.value).toBe(1);
+            expect(initial.at(1)[0]?.value).toBe(2);
+            expect(initial.at(2)[0]?.value).toBe(3);
+            expect(initial.tail()[0]?.value).toBe(3);
+
+            const [success, updatedList] = initial.insert(3, 5);
+            expect(success).toBe(true);
+            expect(updatedList!.size()).toBe(4);
+            expect(updatedList!.at(0)[0]?.value).toBe(1);
+            expect(updatedList!.at(1)[0]?.value).toBe(2);
+            expect(updatedList!.at(2)[0]?.value).toBe(3);
+            expect(updatedList!.at(3)[0]?.value).toBe(5);
+            expect(updatedList?.tail()[0]?.value).toBe(5);
+        })
+
+        it('should add an item to the middle of the linked list', () => {
+            let initial = LinkedList(1, 2, 3);
+
+            expect(initial.size()).toBe(3);
+            expect(initial.at(0)[0]?.value).toBe(1);
+            expect(initial.at(1)[0]?.value).toBe(2);
+            expect(initial.at(2)[0]?.value).toBe(3);
+
+            const [success, updatedList] = initial.insert(1, 5);
+            expect(success).toBe(true);
+            expect(updatedList!.size()).toBe(4);
+            expect(updatedList!.at(0)[0]?.value).toBe(1);
+            expect(updatedList!.at(1)[0]?.value).toBe(5);
+            expect(updatedList!.at(2)[0]?.value).toBe(2);
+            expect(updatedList!.at(3)[0]?.value).toBe(3);
+        })
+
+        it('should fail to an item if the starting index is greater than the size of the existing list', () => {
+            let initial = LinkedList(1, 2, 3);
+
+            expect(initial.size()).toBe(3);
+            expect(initial.at(0)[0]?.value).toBe(1);
+            expect(initial.at(1)[0]?.value).toBe(2);
+            expect(initial.at(2)[0]?.value).toBe(3);
+
+            const [success, updatedList] = initial.insert(6, 5);
+            expect(success).toBe(false);
+            expect(updatedList).toBe(null);
+        })
+
+        it('should fail to an item if the starting index is less than 0', () => {
+            let initial = LinkedList(1, 2, 3);
+
+            expect(initial.size()).toBe(3);
+            expect(initial.at(0)[0]?.value).toBe(1);
+            expect(initial.at(1)[0]?.value).toBe(2);
+            expect(initial.at(2)[0]?.value).toBe(3);
+
+            const [success, updatedList] = initial.insert(-4, 5);
+            expect(success).toBe(false);
+            expect(updatedList).toBe(null);
+        })
+    });
 })

@@ -10,7 +10,7 @@
           "${workspaceRoot}/node_modules/.bin/jest",
           "--runInBand"
         ],
-        "console": "integratedTerminal",
+        "console": "internalConsole",
         "internalConsoleOptions": "neverOpen"
       }
     ]
