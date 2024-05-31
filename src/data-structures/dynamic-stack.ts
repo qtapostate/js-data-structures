@@ -37,11 +37,11 @@ export function DynamicStack<T = number>(...initValues: T[]): IStack<T> {
         if (items.length === 0) {
             throw new StackUnderflowError();
         }
-        
-        const returnValue = items[0] || null;
+
+        const returnValue = items[0];
         const newStack = DynamicStack(...items.slice(1));
 
-        return [returnValue, returnValue !== null ? newStack : null];
+        return [returnValue, newStack];
     };
 
     const isEmpty = (): boolean => {
