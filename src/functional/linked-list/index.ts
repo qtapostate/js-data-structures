@@ -103,11 +103,18 @@ export function LinkedList<T = number>(...values: T[]) {
 
     // deep equality for checking objects
     const deepEquals = <U extends { [k: string]: any } = T extends object ? T : never>(left: U, right: U): boolean => {
-        for (const key of Object.keys(left)) {
-            // recursive case: if we have an object property, recurse into child object
-            if (typeof left[key] === 'object' && !Array.isArray(left[key]) && !deepEquals(left[key], right[key])) return false;
+        const keys = new Set([
+            ...Object.keys(left),
+            ...Object.keys(right)
+        ]);
 
-            // base case: if we have a primitive type
+        // for each key
+        for (const key of keys) {
+            if (typeof left[key] !== typeof right[key]) return false;
+            if (typeof left[key] === 'object' && JSON.stringify(left[key]) !== JSON.stringify(right[key])) {
+                return false;
+            }
+
             if (!equals(left[key], right[key])) return false;
         }
 

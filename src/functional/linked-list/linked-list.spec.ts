@@ -252,6 +252,55 @@ describe('LinkedList', () => {
             expect(node?.value).toBe(25);
             expect(index).toBe(1);
         });
+
+        it('should find the first correct value given a deep match for a list of 3 object elements and no duplicated values', () => {
+            const items = [
+                { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
+                { name: 'Mark', age: 43, preferences: { theme: 'dark', mfa: true }},
+                { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true }},
+            ];
+            const initial = LinkedList<{ name: string; age: number; preferences: { theme: string; mfa: boolean; }}>(...items);
+
+            expect(initial.size()).toBe(3);
+
+            let [node, index] = initial.find(items.at(0)!);
+            
+            expect(node?.value).toStrictEqual({ name: 'John', age: 45, preferences: { theme: 'light', mfa: false }});
+            expect(node?.next?.value).toStrictEqual({ name: 'Mark', age: 43, preferences: { theme: 'dark', mfa: true }});
+            expect(index).toBe(0);
+        });
+
+        it('should find the first correct value given a deep match for a list of 3 object elements and a duplicated value', () => {
+            const initial = LinkedList(
+                { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
+                { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }}, // duplicated
+                { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true  }},
+            );
+
+            expect(initial.size()).toBe(3);
+
+            let [node, index] = initial.find({ name: 'John', age: 45, preferences: { theme: 'light', mfa: false }});
+            
+            expect(node?.value).toStrictEqual({ name: 'John', age: 45, preferences: { theme: 'light', mfa: false }});
+            expect(node?.next?.value).toStrictEqual({ name: 'Mark', age: 43, preferences: { theme: 'dark', mfa: true }});
+            expect(index).toBe(0); // check that we match the first one
+        });
+
+        it('should fail find a value when no deep match can be found in a list of 3 object elements and no duplicated values', () => {
+            const initial = LinkedList(
+                { name: 'John', age: 45, preferences: { theme: 'light', mfa: false }},
+                { name: 'Mark', age: 43, preferences: { theme: 'dark', mfa: true }},
+                { name: 'Harry', age: 56, preferences: { theme: 'light', mfa: true }},
+            );
+
+            expect(initial.size()).toBe(3);
+
+            // mfa is not the correct value, so we should not find this item
+            let [node, index] = initial.find({ name: 'John', age: 45, preferences: { theme: 'light', mfa: false }});
+
+            expect(node).toBe(null);
+            expect(index).toBe(null);
+        });
     });
 
     describe('LinkedList::at(number)', () => {
@@ -313,6 +362,7 @@ describe('LinkedList', () => {
                 current = updatedList!;
             }
         });
+
     });
 
     describe('LinkedList::addHead(...number[])', () => {
