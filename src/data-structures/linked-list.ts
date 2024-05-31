@@ -97,8 +97,8 @@ export function LinkedList<T = number>(...initValues: T[]) {
     const items = [...itemsUnlinked];
 
     // relink all items in reverse direction to ensure deep links
-    for (let i = itemsUnlinked.length; i > 0; i--) {
-        items[i - 1].next = i < itemsUnlinked.length ? items[i] : null
+    for (let i = itemsUnlinked.length - 1; i >= 0; i--) {
+        items[i].next = i < itemsUnlinked.length - 1 ? items[i + 1] : null
     }
 
     // seal and freeze items array to prevent direct modification
