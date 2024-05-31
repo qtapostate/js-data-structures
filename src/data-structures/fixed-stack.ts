@@ -10,12 +10,12 @@ export interface IFixedStack<T> extends IStack<T> {
 }
 
 export function FixedStack<T = number>(maxSize: number, ...initValues: T[]): IFixedStack<T> {
-    if (initValues.length > Math.floor(maxSize)) {
-        throw new StackOverflowError();
-    }
-
     if (maxSize < 0) {
         throw new InvalidSizeError();
+    }
+    
+    if (initValues.length > Math.floor(maxSize)) {
+        throw new StackOverflowError();
     }
     
     // get base functions so we don't have to reimplement them all

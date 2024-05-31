@@ -9,12 +9,12 @@ export interface IFixedQueue<T> extends IQueue<T> {
 }
 
 export function FixedQueue<T = number>(maxSize: number, ...initValues: T[]): IFixedQueue<T> {
-    if (initValues.length > Math.floor(maxSize)) {
-        throw new QueueCapacityReachedError();
-    }
-
     if (maxSize < 0) {
         throw new RangeError("RangeError: max size must be a positive integer.")
+    }
+    
+    if (initValues.length > Math.floor(maxSize)) {
+        throw new QueueCapacityReachedError();
     }
 
     const {
