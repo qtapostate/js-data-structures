@@ -39,6 +39,11 @@ export interface ILinkedList<T> {
      */
     at(index: number): RetrievalResult<T>;
 
+    /**
+     * Retrieve a simple array consisting of the values of each node in the linked list.
+     */
+    values(): Array<T>;
+
     // Mutation Functions
 
     /**
@@ -84,16 +89,21 @@ export interface ILinkedList<T> {
     size(): number;
 }
 
-export function LinkedList<T = number>(...values: T[]) {
+export function LinkedList<T = number>(...initValues: T[]) {
 
     // first create them unlinked so the space is allocated and the array is fully constructed
-    const itemsUnlinked: ILinkedListNode<T>[] = values.map((v: T) => ({ value: v, next: null}) as ILinkedListNode<T>);
+    const itemsUnlinked: ILinkedListNode<T>[] = initValues.map((v: T) => ({ value: v, next: null}) as ILinkedListNode<T>);
 
     const items = [...itemsUnlinked];
 
+    // relink all items in reverse direction to ensure deep links
     for (let i = itemsUnlinked.length; i > 0; i--) {
         items[i - 1].next = i < itemsUnlinked.length ? items[i] : null
     }
+
+    // seal and freeze items array to prevent direct modification
+    Object.freeze(items);
+    Object.seal(items);
 
     // simple primitive or array-type equality
     const equals = (left: any, right: any) => {
@@ -161,8 +171,9 @@ export function LinkedList<T = number>(...values: T[]) {
                 return [current, index];
             }
 
-            if (value === items[index].value) {
-                return [items[index], index];
+            const lookup = at(index)[0];
+            if (value === lookup?.value) {
+                return [lookup, index];
             }
 
             index = index + 1;
@@ -193,6 +204,26 @@ export function LinkedList<T = number>(...values: T[]) {
         }
 
         return [null, null];
+    }
+
+    const values = (): Array<T> => {
+        const arraySize = size();
+        const arr = new Array<T>(arraySize);
+
+        let i = 0;
+        const [headNode] = head();
+        let current = headNode;
+
+        while (current && i < arraySize) {
+            arr[i] = current.value;
+
+            if (!current?.next) break;
+
+            current = current.next;
+            i = i + 1;
+        }
+
+        return arr;
     }
 
     const addHead = (...value: T[]): MutationResult<T> => {
@@ -273,6 +304,7 @@ export function LinkedList<T = number>(...values: T[]) {
         tail,
         find,
         at,
+        values,
         addHead,
         addTail,
         insert,
