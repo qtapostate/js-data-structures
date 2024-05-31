@@ -1,5 +1,5 @@
-type MutationResult<T> = [success: boolean, queue: IDynamicQueue<T> | null];
-type MutationRetrievalResult<T> = [value: T | null, queue: IDynamicQueue<T> | null];
+type MutationResult<T> = [success: boolean, queue: IQueue<T> | null];
+type MutationRetrievalResult<T> = [value: T | null, queue: IQueue<T> | null];
 
 export class QueueEmptyError extends Error {
     constructor() {
@@ -7,7 +7,7 @@ export class QueueEmptyError extends Error {
     }
 }
 
-export interface IDynamicQueue<T> {
+export interface IQueue<T> {
     items: T[];
 
     front(): T | null;
@@ -18,7 +18,7 @@ export interface IDynamicQueue<T> {
     size(): number;
 }
 
-export function DynamicQueue<T = number>(...initValues: T[]): IDynamicQueue<T> {
+export function DynamicQueue<T = number>(...initValues: T[]): IQueue<T> {
     const items = [ ...initValues ];
 
     // prevent direct modification of underlying array
@@ -28,7 +28,7 @@ export function DynamicQueue<T = number>(...initValues: T[]): IDynamicQueue<T> {
     const size = () => items.length;
     const isEmpty = () => size() === 0;
 
-    const rear = () => {
+    const rear = (): T | null => {
         if (isEmpty()) {
             throw new QueueEmptyError();
         }
@@ -36,7 +36,7 @@ export function DynamicQueue<T = number>(...initValues: T[]): IDynamicQueue<T> {
         return items[0];
     }
 
-    const front = () => {
+    const front = (): T | null => {
         if (isEmpty()) {
             throw new QueueEmptyError();
         }
