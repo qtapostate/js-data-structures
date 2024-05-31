@@ -216,7 +216,7 @@ export function LinkedList<T = number>(...values: T[]) {
     }
 
     const insert = (startingIndex: number, ...values: T[]): MutationResult<T> => {
-        if (startingIndex < 0 || startingIndex >= size()) {
+        if (startingIndex < 0 || startingIndex > size()) {
             return [false, null];
         }
 
@@ -229,9 +229,11 @@ export function LinkedList<T = number>(...values: T[]) {
 
             // get the section of items before the specified index
             do {
+                if (startingIndex === 0) break;
                 if (i !== 0) current = current?.next!;
 
                 before[i] = current?.value!;
+                i = i + 1;
             } while (current?.next && i < startingIndex);
 
             i = 0;
@@ -239,10 +241,12 @@ export function LinkedList<T = number>(...values: T[]) {
 
             // get the section of items after the specified index
             do {
+                if (startingIndex === size()) break;
                 if (i !== 0) current = current?.next!;
 
                 after[i] = current?.value!;
-            } while (current?.next && i < size());
+                i = i + 1;
+            } while (current?.next && i < size() - before.length);
 
             const newList = LinkedList<T>(...(before.concat(...values).concat(after)));
 

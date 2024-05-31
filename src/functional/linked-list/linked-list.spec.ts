@@ -724,4 +724,87 @@ describe('LinkedList', () => {
             expect(updatedList?.at(3)[0]?.value).toBe(45);
         });
     })
+
+    describe('LinkedList::insert(number, ...T[])', () => {
+        it('should add an item to the head of the linked list', () => {
+            let initial = LinkedList(1, 2, 3);
+
+            expect(initial.size()).toBe(3);
+            expect(initial.at(0)[0]?.value).toBe(1);
+            expect(initial.at(1)[0]?.value).toBe(2);
+            expect(initial.at(2)[0]?.value).toBe(3);
+            expect(initial.head()[0]?.value).toBe(1);
+
+            const [success, updatedList] = initial.insert(0, 5);
+            expect(success).toBe(true);
+            expect(updatedList!.size()).toBe(4);
+            expect(updatedList!.at(0)[0]?.value).toBe(5);
+            expect(updatedList!.at(1)[0]?.value).toBe(1);
+            expect(updatedList!.at(2)[0]?.value).toBe(2);
+            expect(updatedList!.at(3)[0]?.value).toBe(3);
+            expect(updatedList?.head()[0]?.value).toBe(5);
+        });
+
+        it('should add an item to the tail of the linked list', () => {
+            let initial = LinkedList(1, 2, 3);
+
+            expect(initial.size()).toBe(3);
+            expect(initial.at(0)[0]?.value).toBe(1);
+            expect(initial.at(1)[0]?.value).toBe(2);
+            expect(initial.at(2)[0]?.value).toBe(3);
+            expect(initial.tail()[0]?.value).toBe(3);
+
+            const [success, updatedList] = initial.insert(3, 5);
+            expect(success).toBe(true);
+            expect(updatedList!.size()).toBe(4);
+            expect(updatedList!.at(0)[0]?.value).toBe(1);
+            expect(updatedList!.at(1)[0]?.value).toBe(2);
+            expect(updatedList!.at(2)[0]?.value).toBe(3);
+            expect(updatedList!.at(3)[0]?.value).toBe(5);
+            expect(updatedList?.tail()[0]?.value).toBe(5);
+        })
+
+        it('should add an item to the middle of the linked list', () => {
+            let initial = LinkedList(1, 2, 3);
+
+            expect(initial.size()).toBe(3);
+            expect(initial.at(0)[0]?.value).toBe(1);
+            expect(initial.at(1)[0]?.value).toBe(2);
+            expect(initial.at(2)[0]?.value).toBe(3);
+
+            const [success, updatedList] = initial.insert(1, 5);
+            expect(success).toBe(true);
+            expect(updatedList!.size()).toBe(4);
+            expect(updatedList!.at(0)[0]?.value).toBe(1);
+            expect(updatedList!.at(1)[0]?.value).toBe(5);
+            expect(updatedList!.at(2)[0]?.value).toBe(2);
+            expect(updatedList!.at(3)[0]?.value).toBe(3);
+        })
+
+        it('should fail to an item if the starting index is greater than the size of the existing list', () => {
+            let initial = LinkedList(1, 2, 3);
+
+            expect(initial.size()).toBe(3);
+            expect(initial.at(0)[0]?.value).toBe(1);
+            expect(initial.at(1)[0]?.value).toBe(2);
+            expect(initial.at(2)[0]?.value).toBe(3);
+
+            const [success, updatedList] = initial.insert(6, 5);
+            expect(success).toBe(false);
+            expect(updatedList).toBe(null);
+        })
+
+        it('should fail to an item if the starting index is less than 0', () => {
+            let initial = LinkedList(1, 2, 3);
+
+            expect(initial.size()).toBe(3);
+            expect(initial.at(0)[0]?.value).toBe(1);
+            expect(initial.at(1)[0]?.value).toBe(2);
+            expect(initial.at(2)[0]?.value).toBe(3);
+
+            const [success, updatedList] = initial.insert(-4, 5);
+            expect(success).toBe(false);
+            expect(updatedList).toBe(null);
+        })
+    });
 })
