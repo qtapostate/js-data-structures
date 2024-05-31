@@ -12,16 +12,24 @@ Included in this project are (or will be) the following data structures:
 * `LinkedList`
  
 Still a work in progress:
-* `DoublyLinkedList` (WIP)
-* `Stack` (WIP)
-* `Queue` (WIP)
-* `DirectedGraph` (WIP)
-* `UndirectedGraph` (WIP)
-* `NAryTree` (WIP)
-* `BalancedTree` (WIP)
-* `BinaryTree` (WIP)
-* `BinarySearchTree` (WIP)
-* `AVLTree` (WIP)
-* `RedBlackTree` (WIP)
-* `TwoThreeTree` (WIP)
-* `Trie` (WIP)
+* Data Structures
+  * `DoublyLinkedList` (WIP)
+  * `Stack` (WIP)
+  * `Queue` (WIP)
+  * `DirectedGraph` (WIP)
+  * `UndirectedGraph` (WIP)
+  * `NAryTree` (WIP)
+  * `BalancedTree` (WIP)
+  * `BinaryTree` (WIP)
+  * `BinarySearchTree` (WIP)
+  * `AVLTree` (WIP)
+  * `RedBlackTree` (WIP)
+  * `TwoThreeTree` (WIP)
+  * `Trie` (WIP)
+  * `HashTable` (WIP)
+  * ... probably more that i'll think of adding later
+ 
+* Algorithms
+  * Graph: Breadth-First Search (WIP)
+  * Graph: Depth-First Search (WIP)
+  * ... probably more by the time i get around to it.
