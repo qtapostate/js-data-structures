@@ -1,13 +1,7 @@
 import { DynamicQueue, IQueue } from "./dynamic-queue";
+import { QueueCapacityReachedError } from "./errors";
 
 type MutationResult<T> = [success: boolean, queue: IFixedQueue<T> | null];
-type MutationRetrievalResult<T> = [value: T | null, queue: IFixedQueue<T> | null];
-
-export class QueueCapacityReachedError extends Error {
-    constructor() {
-        super("QueueCapacityReachedError: Unable to add new items to a queue when it has reached the defined capacity.");
-    }
-}
 
 export interface IFixedQueue<T> extends IQueue<T> {
     isFull(): boolean;
@@ -15,7 +9,11 @@ export interface IFixedQueue<T> extends IQueue<T> {
 }
 
 export function FixedQueue<T = number>(maxSize: number, ...initValues: T[]): IFixedQueue<T> {
-    if (initValues.length > maxSize) {
+    if (maxSize < 0) {
+        throw new RangeError("RangeError: max size must be a positive integer.")
+    }
+    
+    if (initValues.length > Math.floor(maxSize)) {
         throw new QueueCapacityReachedError();
     }
 
@@ -28,7 +26,7 @@ export function FixedQueue<T = number>(maxSize: number, ...initValues: T[]): IFi
         dequeue
     } = DynamicQueue(...initValues);
 
-    const capacity = () => maxSize;
+    const capacity = () => Math.floor(maxSize);
     const isFull = () => size() >= capacity();
 
     const enqueue = (value: T): MutationResult<T> => {

@@ -1,11 +1,7 @@
+import { QueueEmptyError } from "./errors";
+
 type MutationResult<T> = [success: boolean, queue: IQueue<T> | null];
 type MutationRetrievalResult<T> = [value: T | null, queue: IQueue<T> | null];
-
-export class QueueEmptyError extends Error {
-    constructor() {
-        super("QueueEmptyError: Failed to dequeue element from empty queue.");
-    }
-}
 
 export interface IQueue<T> {
     items: T[];

@@ -1,11 +1,7 @@
+import { StackUnderflowError } from "./errors";
+
 type MutationResult<T> = [success: boolean, stack: IStack<T> | null];
 type MutationRetrievalResult<T> = [value: T | null, stack: IStack<T> | null];
-
-export class StackUnderflowError extends TypeError {
-    constructor() {
-        super("StackUnderflowError: Stack has no remaining items to pop.");
-    }
-}
 
 export interface IStack<T> {
     items: T[];

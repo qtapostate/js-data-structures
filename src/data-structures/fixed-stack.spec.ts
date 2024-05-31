@@ -1,4 +1,5 @@
-import { FixedStack, StackOverflowError, StackUnderflowError } from "."
+import { InvalidSizeError, StackOverflowError, StackUnderflowError } from "./errors"
+import { FixedStack } from "./fixed-stack";
 
 describe('FixedStack', () => {
     it ('should initialize', () => {
@@ -20,6 +21,10 @@ describe('FixedStack', () => {
 
     it('should throw a StackOverflowError when specifying more values than the capacity at init', () => {
         expect(() => FixedStack(1, 20, 50)).toThrow(new StackOverflowError());
+    })
+
+    it('should throw a RangeError if the max size argument is < 0', () => {
+        expect(() => FixedStack(-1)).toThrow(new InvalidSizeError());
     })
 
     describe('FixedStack::push(T)', () => {
