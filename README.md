@@ -11,10 +11,11 @@ For this project I have only a few rules to constrain myself:
 Included in this project are (or will be) the following data structures:
 * `LinkedList`
 * `DoublyLinkedList`
+* `DynamicStack`
+* `FixedStack`
  
 Still a work in progress:
 * Data Structures
-  * `Stack` (WIP)
   * `Queue` (WIP)
   * `DirectedGraph` (WIP)
   * `UndirectedGraph` (WIP)
